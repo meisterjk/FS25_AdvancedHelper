@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<l10n>
+	<translationContributors/>
+	<texts>
+		<!-- Input binding -->
+		<text name="input_ADVANCEDHELPER_TOGGLE_HUD" text="Toggle Advanced Helper HUD"/>
+		<text name="input_ADVANCEDHELPER_TOGGLE_CURSOR" text="Toggle Advanced Helper Cursor"/>
+
+		<!-- General -->
+		<text name="advancedHelper_title" text="Advanced Helper"/>
+		<text name="advancedHelper_tabApplicants" text="Applicants"/>
+		<text name="advancedHelper_tabOverview" text="Employees"/>
+
+		<!-- Table headers -->
+		<text name="advancedHelper_name" text="Name"/>
+		<text name="advancedHelper_efficiency" text="Efficiency"/>
+		<text name="advancedHelper_driving" text="Driving"/>
+		<text name="advancedHelper_skill" text="Skill"/>
+		<text name="advancedHelper_salary" text="Salary"/>
+
+		<!-- Buttons -->
+		<text name="advancedHelper_hire" text="Hire"/>
+		<text name="advancedHelper_fire" text="Dismiss"/>
+		<text name="advancedHelper_refresh" text="Refresh"/>
+
+		<!-- Status / info -->
+		<text name="advancedHelper_perMonth" text="/ month"/>
+		<text name="advancedHelper_monthlySalary" text="Monthly Salary"/>
+		<text name="advancedHelper_totalCosts" text="Total Monthly Costs"/>
+		<text name="advancedHelper_helpersAvailable" text="AI Helpers available: %d"/>
+
+		<!-- Empty states -->
+		<text name="advancedHelper_noApplicants" text="No applicants available right now. New applicants will appear over time."/>
+		<text name="advancedHelper_noEmployees" text="You have no employees yet. Hire applicants from the Applicants tab."/>
+
+		<!-- Dialogs -->
+		<text name="advancedHelper_hireConfirm" text="Do you want to hire this worker?"/>
+		<text name="advancedHelper_fireConfirm" text="Do you want to dismiss this worker?"/>
+		<text name="advancedHelper_hired" text="Worker hired!"/>
+		<text name="advancedHelper_fired" text="Worker dismissed!"/>
+
+		<!-- Attribute effects -->
+		<text name="advancedHelper_fuelEffect" text="Fuel: %+.0f%%"/>
+		<text name="advancedHelper_speedEffect" text="Speed: %+.0f%%"/>
+		<text name="advancedHelper_wearEffect" text="Wear: %+.0f%%"/>
+
+		<!-- Payroll -->
+		<text name="advancedHelper_payday" text="Payday! Salaries paid: %s"/>
+		<text name="advancedHelper_cannotAfford" text="Cannot afford monthly salaries! Budget short: %s"/>
+
+		<!-- Finance overview -->
+		<text name="statisticWorkerSalary" text="Worker Salary"/>
+		<text name="moneyTypeWorkerSalary" text="Worker Salary"/>
+
+		<!-- HUD -->
+		<text name="advancedHelper_hudAssigned" text="Active"/>
+		<text name="advancedHelper_hudFree" text="Free"/>
+		<text name="advancedHelper_hudWorkers" text="Workers"/>
+
+		<!-- AutoDrive -->
+		<text name="advancedHelper_allWorkersBusy" text="All workers are busy!"/>
+	</texts>
+</l10n>

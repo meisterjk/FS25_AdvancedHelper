@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<GUIProfiles>
+    <Profile name="advancedHelperMenuHeaderIcon" extends="baseReference" with="anchorMiddleCenter">
+        <imageSliceId value="gui.icon_ingameMenu_contracts" />
+        <imageColor value="$preset_fs25_colorMainDark" />
+    </Profile>
+    <Profile name="advancedHelperHeader" extends="baseReference">
+        <imageColor value="0 0 0 0" />
+        <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+        <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+        <textSize value="16px" />
+        <textBold value="true" />
+        <textUpperCase value="true" />
+        <textColor value="$preset_colorWhite_50" />
+        <textAlignment value="left" />
+        <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="advancedHelperHeaderRight" extends="baseReference">
+        <imageColor value="0 0 0 0" />
+        <textFocusedColor value="$preset_fs25_colorMainHighlight" />
+        <textHighlightedColor value="$preset_fs25_colorMainHighlight" />
+        <textSize value="16px" />
+        <textBold value="true" />
+        <textUpperCase value="true" />
+        <textColor value="$preset_colorWhite_50" />
+        <textAlignment value="right" />
+        <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="advancedHelperTable" extends="emptyPanel" with="anchorStretchingYLeft pivotTopLeft" />
+    <Profile name="advancedHelperListItem" extends="baseReference" with="anchorTopStretchingX alternating">
+        <height value="32px"/>
+        <imageColor value="$preset_fs25_colorGrey" />
+        <imageSelectedColor value="$preset_fs25_colorMainHighlight" />
+        <alternateBackgroundColor value="$preset_fs25_colorGreyDark_50" />
+    </Profile>
+    <Profile name="advancedHelperRowCellLeft" extends="baseReference" with="anchorStretchingYLeft">
+        <textBold value="false" />
+        <textSize value="15px" />
+        <textAlignment value="left" />
+        <textColor value="$preset_fs25_colorMainLight" />
+        <textSelectedColor value="$preset_fs25_colorMainDark" />
+        <textDisabledColor value="$preset_colorDisabled" />
+    </Profile>
+    <Profile name="advancedHelperRowCellRight" extends="advancedHelperRowCellLeft">
+        <textAlignment value="right" />
+    </Profile>
+    <Profile name="advancedHelperSliderBox" extends="fs25_listSliderBox" with="anchorTopRight" />
+    <Profile name="advancedHelperInfoTextBold" extends="fs25_infoText">
+        <textBold value="true" />
+    </Profile>
+</GUIProfiles>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<modDesc descVersion="109">
+    <author>mj</author>
+    <version>0.3.0</version>
+    <title>
+        <en>Advanced Helper</en>
+        <de>Erweiterte Helfer</de>
+    </title>
+    <description>
+        <en><![CDATA[A full worker/employee management system. Hire workers with unique skills that replace AI helpers. Worker efficiency affects fuel consumption, driving speed and vehicle wear. Costs depend on difficulty and worker quality.]]></en>
+        <de><![CDATA[Ein vollständiges Personalmanagement-System. Stelle Arbeiter mit einzigartigen Fähigkeiten ein, die KI-Helfer ersetzen. Die Effizienz der Arbeiter beeinflusst Spritverbrauch, Fahrtempo und Fahrzeugverschleiß. Kosten hängen von Schwierigkeit und Qualität ab.]]></de>
+    </description>
+    <iconFilename>icon_advancedHelper.dds</iconFilename>
+    <multiplayer supported="true"/>
+    <extraSourceFiles>
+        <sourceFile filename="scripts/advancedHelperConfig.lua"/>
+        <sourceFile filename="scripts/advancedHelperMoneyType.lua"/>
+        <sourceFile filename="scripts/advancedHelperFinanceStats.lua"/>
+        <sourceFile filename="scripts/advancedHelperEvents.lua"/>
+        <sourceFile filename="scripts/advancedHelperAPI.lua"/>
+        <sourceFile filename="scripts/advancedHelperMain.lua"/>
+    </extraSourceFiles>
+    <l10n filenamePrefix="translations/translation"/>
+    <actions>
+        <action name="ADVANCEDHELPER_TOGGLE_HUD"/>
+        <action name="ADVANCEDHELPER_TOGGLE_CURSOR"/>
+    </actions>
+    <inputBinding>
+        <actionBinding action="ADVANCEDHELPER_TOGGLE_HUD">
+            <binding device="KB_MOUSE_DEFAULT" input="KEY_rctrl KEY_h" index="1"/>
+        </actionBinding>
+        <actionBinding action="ADVANCEDHELPER_TOGGLE_CURSOR">
+            <binding device="KB_MOUSE_DEFAULT" input="MOUSE_BUTTON_MIDDLE" index="1"/>
+        </actionBinding>
+    </inputBinding>
+</modDesc>

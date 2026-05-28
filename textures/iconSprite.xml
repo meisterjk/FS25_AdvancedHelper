@@ -1,0 +1,11 @@
+<texture>
+    <meta>
+        <filename>iconSprite.dds</filename>
+        <size width="128" height="32" />
+    </meta>
+    <slices>
+        <slice id="play" uvs="2px 2px 28px 28px"/>
+        <slice id="stop" uvs="34px 2px 28px 28px"/>
+        <slice id="close" uvs="66px 2px 28px 28px"/>
+    </slices>
+</texture>
