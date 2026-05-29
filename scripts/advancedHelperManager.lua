@@ -301,6 +301,7 @@ function advancedHelperManager:hireApplicant(applicantId, farmId)
 
         table.insert(self.hiredWorkers, applicant)
         table.remove(self.applicants, appIndex)
+        g_currentMission:addMoney(-applicant.monthlySalary, applicant.farmId, MoneyType.WORKER_SALARY, true, true)
         self:updateMaxHirables()
         self:saveState()
         advancedHelperSyncEvent.broadcast()
