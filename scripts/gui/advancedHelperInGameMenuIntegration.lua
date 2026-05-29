@@ -60,7 +60,7 @@ function advancedHelperGui.addIngameMenuPage(frame, pageName, uvs, predicateFunc
 
     g_inGameMenu:registerPage(g_inGameMenu[pageName], nil, predicateFunc)
 
-    local iconFileName = Utils.getFilename('icon_advancedHelper.dds', advancedHelperGui.modDirectory)
+    local iconFileName = Utils.getFilename('icon_menu.dds', advancedHelperGui.modDirectory)
     g_inGameMenu:addPageTab(g_inGameMenu[pageName], iconFileName, GuiUtils.getUVs(uvs))
 
     for i = 1, #g_inGameMenu.pageFrames do
