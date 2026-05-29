@@ -234,6 +234,7 @@ end
 
 function advancedHelperPage:onRefreshClicked()
     advancedHelperRefreshEvent.sendEvent()
+    self:updateContent()
 end
 
 function advancedHelperPage:getNumberOfSections(list)
