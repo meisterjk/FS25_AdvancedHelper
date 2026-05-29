@@ -111,9 +111,11 @@ function advancedHelperHud:init()
             playOv = g_overlayManager:createOverlay("advancedHelperIcon.play", 0, 0, btnW, btnH)
         else
             playOv = Overlay.new(texture, 0, 0, btnW, btnH)
-            playOv:setUVs(uvs)
+            if playOv ~= nil then playOv:setUVs(uvs) end
         end
-        playOv:setColor(unpack(advancedHelperHud.COLOR_PLAY))
+        if playOv ~= nil then
+            playOv:setColor(unpack(advancedHelperHud.COLOR_PLAY))
+        end
         advancedHelperHud.playOverlays[i] = playOv
 
         local stopOv
@@ -121,9 +123,11 @@ function advancedHelperHud:init()
             stopOv = g_overlayManager:createOverlay("advancedHelperIcon.stop", 0, 0, btnW, btnH)
         else
             stopOv = Overlay.new(texture, 0, 0, btnW, btnH)
-            stopOv:setUVs(uvs)
+            if stopOv ~= nil then stopOv:setUVs(uvs) end
         end
-        stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
+        if stopOv ~= nil then
+            stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
+        end
         advancedHelperHud.stopOverlays[i] = stopOv
     end
 
@@ -131,9 +135,11 @@ function advancedHelperHud:init()
         advancedHelperHud.closeOverlay = g_overlayManager:createOverlay("advancedHelperIcon.close", 0, 0, closeW, closeH)
     else
         advancedHelperHud.closeOverlay = Overlay.new(texture, 0, 0, closeW, closeH)
-        advancedHelperHud.closeOverlay:setUVs(uvs)
+        if advancedHelperHud.closeOverlay ~= nil then advancedHelperHud.closeOverlay:setUVs(uvs) end
     end
-    advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
+    if advancedHelperHud.closeOverlay ~= nil then
+        advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
+    end
 
     local attrIconW, attrIconH = getNormalizedScreenValues(advancedHelperHud.ATTR_ICON_SIZE_PX, advancedHelperHud.ATTR_ICON_SIZE_PX)
 
@@ -283,10 +289,12 @@ function advancedHelperHud:draw()
 
     local closeBtnX = x + w - m - closeSzW
     local closeBtnY = y + totalH - hH + (hH - closeSzH) * 0.5
-    advancedHelperHud.closeOverlay:setPosition(closeBtnX, closeBtnY)
-    advancedHelperHud.closeOverlay:setDimension(closeSzW, closeSzH)
-    advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
-    advancedHelperHud.closeOverlay:render()
+    if advancedHelperHud.closeOverlay ~= nil then
+        advancedHelperHud.closeOverlay:setPosition(closeBtnX, closeBtnY)
+        advancedHelperHud.closeOverlay:setDimension(closeSzW, closeSzH)
+        advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
+        advancedHelperHud.closeOverlay:render()
+    end
     table.insert(advancedHelperHud.buttonRows, {
         type = "close", x = closeBtnX, y = closeBtnY,
         w = closeSzW, h = closeSzH
@@ -364,21 +372,25 @@ function advancedHelperHud:draw()
         if i <= advancedHelperHud.maxRowOverlays then
             if worker.isAssigned then
                 local stopOv = advancedHelperHud.stopOverlays[i]
-                stopOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
-                stopOv:setDimension(btnSzW, btnSzH)
-                stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
-                stopOv:render()
+                if stopOv ~= nil then
+                    stopOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
+                    stopOv:setDimension(btnSzW, btnSzH)
+                    stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
+                    stopOv:render()
+                end
             else
                 local canStart = vehicle ~= nil and vehicle:getCanStartAIVehicle()
                 local playOv = advancedHelperHud.playOverlays[i]
-                playOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
-                playOv:setDimension(btnSzW, btnSzH)
-                if canStart then
-                    playOv:setColor(unpack(advancedHelperHud.COLOR_PLAY))
-                else
-                    playOv:setColor(unpack(advancedHelperHud.COLOR_DISABLED))
+                if playOv ~= nil then
+                    playOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
+                    playOv:setDimension(btnSzW, btnSzH)
+                    if canStart then
+                        playOv:setColor(unpack(advancedHelperHud.COLOR_PLAY))
+                    else
+                        playOv:setColor(unpack(advancedHelperHud.COLOR_DISABLED))
+                    end
+                    playOv:render()
                 end
-                playOv:render()
             end
         end
 
