@@ -1,7 +1,7 @@
 advancedHelperPayroll = {}
 advancedHelperPayroll.lastPaidPeriod = -1
 
-function advancedHelperPayroll.onDayChanged()
+function advancedHelperPayroll.update(dt)
     if g_server == nil then
         return
     end
