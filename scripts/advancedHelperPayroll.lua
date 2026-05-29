@@ -1,4 +1,5 @@
 advancedHelperPayroll = {}
+advancedHelperPayroll.lastPaidPeriod = -1
 
 function advancedHelperPayroll.onDayChanged()
     if g_server == nil then
@@ -7,9 +8,11 @@ function advancedHelperPayroll.onDayChanged()
     if g_currentMission == nil or g_currentMission.environment == nil then
         return
     end
-    if g_currentMission.environment.currentDay ~= 1 then
+    local period = g_currentMission.environment.currentPeriod
+    if period == advancedHelperPayroll.lastPaidPeriod then
         return
     end
+    advancedHelperPayroll.lastPaidPeriod = period
     advancedHelperPayroll.paySalaries()
 end
 

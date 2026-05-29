@@ -1,5 +1,5 @@
 advancedHelperAPI = {
-    _version = "0.3.3",
+    _version = "0.3.4",
     _listeners = {},
 }
 

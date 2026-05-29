@@ -119,6 +119,9 @@ end
 
 function advancedHelper.onMissionStarted()
     advancedHelperManager:loadFromSavegame()
+    if g_currentMission ~= nil and g_currentMission.environment ~= nil then
+        advancedHelperPayroll.lastPaidPeriod = g_currentMission.environment.currentPeriod
+    end
 end
 
 function advancedHelper.onSaveGame()
