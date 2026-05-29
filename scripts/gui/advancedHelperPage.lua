@@ -205,6 +205,7 @@ function advancedHelperPage:onHireClicked()
                 local playerFarmId = g_currentMission:getFarmId()
                 advancedHelperHireEvent.sendEvent(applicantId, playerFarmId)
                 self.selectedApplicant = nil
+                self:updateContent()
             end
         end,
         nil,
@@ -225,6 +226,7 @@ function advancedHelperPage:onFireClicked()
                 local playerFarmId = g_currentMission:getFarmId()
                 advancedHelperFireEvent.sendEvent(workerId, playerFarmId)
                 self.selectedWorker = nil
+                self:updateContent()
             end
         end,
         nil,

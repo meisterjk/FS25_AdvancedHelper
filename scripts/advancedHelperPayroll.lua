@@ -1,10 +1,13 @@
 advancedHelperPayroll = {}
 
-function advancedHelperPayroll.init()
-end
-
-function advancedHelperPayroll.onPeriodChanged()
-    if not g_currentMission:getIsServer() then
+function advancedHelperPayroll.onDayChanged()
+    if g_server == nil then
+        return
+    end
+    if g_currentMission == nil or g_currentMission.environment == nil then
+        return
+    end
+    if g_currentMission.environment.currentDay ~= 1 then
         return
     end
     advancedHelperPayroll.paySalaries()

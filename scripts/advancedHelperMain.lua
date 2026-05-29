@@ -24,7 +24,6 @@ function advancedHelper:loadMap()
     advancedHelperHud.spriteRegistered = true
 
     advancedHelperManager:init()
-    advancedHelperPayroll.init()
 
     advancedHelperFuelHook.install()
     advancedHelperDamageHook.install()
@@ -37,7 +36,7 @@ function advancedHelper:loadMap()
 
     g_messageCenter:subscribe(MessageType.DAY_CHANGED, advancedHelper.onDayChanged, advancedHelper)
     g_messageCenter:subscribeOneshot(MessageType.CURRENT_MISSION_START, advancedHelper.onMissionStarted, advancedHelper)
-    g_messageCenter:subscribe(MessageType.PERIOD_CHANGED, advancedHelperPayroll.onPeriodChanged)
+    g_messageCenter:subscribe(MessageType.DAY_CHANGED, advancedHelperPayroll.onDayChanged)
     g_messageCenter:subscribe(MessageType.AI_JOB_STARTED, advancedHelperSpeedHook.onAIJobStarted)
     g_messageCenter:subscribe(MessageType.AI_JOB_STOPPED, advancedHelperSpeedHook.onAIJobStopped)
 
@@ -54,7 +53,7 @@ end
 function advancedHelper:deleteMap()
     g_messageCenter:unsubscribe(MessageType.DAY_CHANGED, advancedHelper)
     g_messageCenter:unsubscribe(MessageType.CURRENT_MISSION_START, advancedHelper)
-    g_messageCenter:unsubscribe(MessageType.PERIOD_CHANGED, advancedHelperPayroll.onPeriodChanged)
+    g_messageCenter:unsubscribe(MessageType.DAY_CHANGED, advancedHelperPayroll.onDayChanged)
     g_messageCenter:unsubscribe(MessageType.AI_JOB_STARTED, advancedHelperSpeedHook.onAIJobStarted)
     g_messageCenter:unsubscribe(MessageType.AI_JOB_STOPPED, advancedHelperSpeedHook.onAIJobStopped)
     advancedHelperAutoDriveHook.uninstall()
