@@ -1,54 +1,36 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<modDesc descVersion="109">
+<modDesc descVersion="108">
     <author>mj</author>
-    <version>0.3.6</version>
+    <version>1.0.0.0</version>
     <title>
         <en>Advanced Helper</en>
         <de>Erweiterte Helfer</de>
     </title>
     <description>
-        <en><![CDATA[A full worker/employee management system.
-Hire workers with unique skills that replace AI helpers.
+        <en><![CDATA[
+Description: A full worker/employee management system. Hire workers with unique skills (Efficiency, Driving, Skill on a 1-10 scale) that replace default AI helpers. Only as many AI helpers can be active as workers are hired. Workers are paid daily based on difficulty and quality. Monthly salary costs appear in the finance overview.
 
-Each worker has 3 values (scale 1/10 to 10/10):
-- Efficiency (fuel consumption): 1/10 = +10% | 10/10 = -10%
-- Driving (speed): 1/10 = -30% | 10/10 = normal speed
-- Skill (vehicle wear): 1/10 = +20% | 10/10 = -20%
+Hotkeys: Ctrl+H - Toggle HUD | Middle Mouse Button - Toggle cursor | InGame Menu - ESC → Advanced Helper tab
 
-You can only activate as many AI helpers as you have employees hired.
-Without employees, no helper can be activated.
-Helpers are paid once per day but have no ongoing costs.
-Costs depend on difficulty and worker quality.
+GitHub link: https://github.com/meisterjk/FS25_AdvancedHelper
 
-Github:
-https://github.com/meisterjk/FS25_AdvancedHelper
+Changelog v1.0.0.0:
+- First public release
+- Fixed modDesc descVersion to 108
+- Fixed version schema to a.b.c.d
+- Fixed icon DXT format and mipmaps]]></en>
+        <de><![CDATA[
+Beschreibung: Ein vollständiges Personalmanagement-System. Stelle Arbeiter mit einzigartigen Fähigkeiten ein (Effizienz, Fahrweise, Können auf einer Skala von 1-10), die die Standard-KI-Helfer ersetzen. Es können nur so viele KI-Helfer aktiv sein wie Arbeiter eingestellt sind. Arbeiter werden täglich bezahlt, abhängig von Schwierigkeit und Qualität. Monatliche Gehaltskosten erscheinen in der Finanzübersicht.
 
-License: 
-MIT
+Tastenkombinationen: Strg+H - HUD ein/aus | Mittlere Maustaste - Cursor ein/aus | InGame-Menü - ESC → Erweiterte Helfer-Tab
 
-Changelog v0.3.6:
-- First public beta release]]></en>
-        <de><![CDATA[Ein vollständiges Personalmanagement-System.
-Stelle Arbeiter mit einzigartigen Fähigkeiten ein, die KI-Helfer ersetzen.
+GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper
 
-Jeder Arbeiter hat 3 Werte (Skala 1/10 bis 10/10):
-- Effizienz (Spritverbrauch): 1/10 = +10% | 10/10 = -10%
-- Fahrweise (Arbeitsgeschwindigkeit): 1/10 = -30% | 10/10 = normale Arbeitsgeschwindigkeit
-- Können (Verschleiß): 1/10 = +20% | 10/10 = -20%
-
-Es können nur so viele KI-Helfer aktiviert werden wie Angestellte vorhanden sind.
-Ohne Angestellte ist kein Helfer aktivierbar.
-Helfer werden einmal pro Tag bezahlt, haben aber keine laufenden Kosten.
-Kosten hängen von Schwierigkeit und Qualität ab.
-
-Github:
-https://github.com/meisterjk/FS25_AdvancedHelper
-
-Lizenz: 
-MIT
-
-Changelog v0.3.6:
-- Erster öffentlicher Beta-Release]]></de>
+Changelog v1.0.0.0:
+- Erster öffentlicher Release
+- modDesc descVersion auf 108 korrigiert
+- Version-Schema auf a.b.c.d korrigiert
+- Icon DXT-Format und MipMaps korrigiert]]></de>
     </description>
     <iconFilename>icon_advancedHelper.dds</iconFilename>
     <multiplayer supported="true"/>
