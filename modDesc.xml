@@ -7,8 +7,48 @@
         <de>Erweiterte Helfer</de>
     </title>
     <description>
-        <en><![CDATA[A full worker/employee management system. Hire workers with unique skills that replace AI helpers. Worker efficiency affects fuel consumption, driving speed and vehicle wear. Costs depend on difficulty and worker quality.]]></en>
-        <de><![CDATA[Ein vollständiges Personalmanagement-System. Stelle Arbeiter mit einzigartigen Fähigkeiten ein, die KI-Helfer ersetzen. Die Effizienz der Arbeiter beeinflusst Spritverbrauch, Fahrtempo und Fahrzeugverschleiß. Kosten hängen von Schwierigkeit und Qualität ab.]]></de>
+        <en><![CDATA[A full worker/employee management system.
+Hire workers with unique skills that replace AI helpers.
+
+Each worker has 3 values (scale 1/10 to 10/10):
+- Efficiency (fuel consumption): 1/10 = +10% | 10/10 = -10%
+- Driving (speed): 1/10 = -30% | 10/10 = normal speed
+- Skill (vehicle wear): 1/10 = +20% | 10/10 = -20%
+
+You can only activate as many AI helpers as you have employees hired.
+Without employees, no helper can be activated.
+Helpers are paid once per day but have no ongoing costs.
+Costs depend on difficulty and worker quality.
+
+Github:
+https://github.com/meisterjk/FS25_AdvancedHelper
+
+License: 
+MIT
+
+Changelog v0.3.6:
+- First public beta release]]></en>
+        <de><![CDATA[Ein vollständiges Personalmanagement-System.
+Stelle Arbeiter mit einzigartigen Fähigkeiten ein, die KI-Helfer ersetzen.
+
+Jeder Arbeiter hat 3 Werte (Skala 1/10 bis 10/10):
+- Effizienz (Spritverbrauch): 1/10 = +10% | 10/10 = -10%
+- Fahrweise (Arbeitsgeschwindigkeit): 1/10 = -30% | 10/10 = normale Arbeitsgeschwindigkeit
+- Können (Verschleiß): 1/10 = +20% | 10/10 = -20%
+
+Es können nur so viele KI-Helfer aktiviert werden wie Angestellte vorhanden sind.
+Ohne Angestellte ist kein Helfer aktivierbar.
+Helfer werden einmal pro Tag bezahlt, haben aber keine laufenden Kosten.
+Kosten hängen von Schwierigkeit und Qualität ab.
+
+Github:
+https://github.com/meisterjk/FS25_AdvancedHelper
+
+Lizenz: 
+MIT
+
+Changelog v0.3.6:
+- Erster öffentlicher Beta-Release]]></de>
     </description>
     <iconFilename>icon_advancedHelper.dds</iconFilename>
     <multiplayer supported="true"/>
