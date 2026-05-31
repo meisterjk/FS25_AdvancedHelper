@@ -85,9 +85,8 @@ function advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
                 end
                 local newLimit = obj.speedLimit * speedMult
                 advancedHelperDebug.log(string.format(
-                    "SPEED SET: %s speedLimit=%.1f->%.1fkm/h (-%.1f%%) [driving=%d, worker=%s, id=%d]",
-                    obj:getName(), obj.speedLimit, newLimit, (1 - speedMult) * 100, worker.driving,
-                    worker:getFullName(), worker.id
+                    "SPEED SET: %s speedLimit=%.1f->%.1fkm/h (-%.1f%%) [driving=%d]",
+                    obj:getName(), obj.speedLimit, newLimit, (1 - speedMult) * 100, worker.driving
                 ))
                 obj.speedLimit = newLimit
                 modified = true

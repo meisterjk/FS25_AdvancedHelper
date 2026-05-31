@@ -137,11 +137,7 @@ end
 function advancedHelperHelperSafeguard.getPricePerMs(self, superFunc)
     if #advancedHelperManager.hiredWorkers > 0 then
         local farmId = self.startedFarmId
-        if farmId ~= nil then
-            if advancedHelperManager:getWorkerCountForFarm(farmId) > 0 then
-                return 0
-            end
-        elseif advancedHelperConfig.INFILTRATE_AUTODRIVE then
+        if farmId ~= nil and advancedHelperManager:getWorkerCountForFarm(farmId) > 0 then
             return 0
         end
     end

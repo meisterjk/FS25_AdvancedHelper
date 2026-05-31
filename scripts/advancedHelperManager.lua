@@ -585,100 +585,47 @@ function advancedHelperManager:applySyncState(data)
         return
     end
 
+    self.hiredWorkers = {}
+    self.applicants = {}
     self.lastRefreshDay = data.lastRefreshDay or 0
+
     local maxId = 0
 
-    if g_server ~= nil then
-        local existing = {}
-        for _, w in ipairs(self.hiredWorkers) do
-            existing[w.id] = w
-        end
+    for _, wd in ipairs(data.hiredWorkers or {}) do
+        local w = advancedHelperWorker.new()
+        w.id = wd.id
+        w.firstName = wd.firstName or ""
+        w.lastName = wd.lastName or ""
+        w.gender = wd.gender or "M"
+        w.efficiency = wd.efficiency or 5
+        w.driving = wd.driving or 5
+        w.skill = wd.skill or 5
+        w.monthlySalary = wd.monthlySalary or advancedHelperWorker.BASE_SALARY
+        w.isHired = true
+        w.hireDay = wd.hireDay or 0
+        w.farmId = wd.farmId or FarmManager.SINGLEPLAYER_FARM_ID
+        w.isAssigned = wd.isAssigned or false
+        w.assignSource = wd.assignSource or ""
+        w.assignedVehicle = nil
+        w.helperIndex = nil
+        w.helperName = nil
 
-        local newHired = {}
-        for _, wd in ipairs(data.hiredWorkers or {}) do
-            local w = existing[wd.id]
-            if w == nil then
-                w = advancedHelperWorker.new()
-                w.id = wd.id
-                w.isHired = true
-                local hName = "ADVANCEDHELPERWORKER_" .. w.id
-                local h = g_helperManager.helpers[hName:upper()]
-                if h then
-                    w.helperIndex = h.index
-                    w.helperName = hName
-                end
-            end
-
-            w.firstName = wd.firstName or ""
-            w.lastName = wd.lastName or ""
-            w.gender = wd.gender or "M"
-            w.efficiency = wd.efficiency or 5
-            w.driving = wd.driving or 5
-            w.skill = wd.skill or 5
-            w.monthlySalary = wd.monthlySalary or advancedHelperWorker.BASE_SALARY
-            w.hireDay = wd.hireDay or 0
-            w.farmId = wd.farmId or FarmManager.SINGLEPLAYER_FARM_ID
-            w.isAssigned = wd.isAssigned or false
-            w.assignSource = wd.assignSource or ""
-
-            if w.isAssigned and wd.assignedVehicleId ~= nil then
-                local vehicle = NetworkUtil.getObject(wd.assignedVehicleId)
-                if vehicle ~= nil then
-                    w.assignedVehicle = vehicle
-                else
-                    w.isAssigned = false
-                    w.assignedVehicle = nil
-                end
-            elseif wd.assignedVehicleId == nil then
-                w.assignedVehicle = nil
+        if w.isAssigned and wd.assignedVehicleId ~= nil then
+            local vehicle = NetworkUtil.getObject(wd.assignedVehicleId)
+            if vehicle ~= nil then
+                w.assignedVehicle = vehicle
+            else
                 w.isAssigned = false
             end
-
-            if w.id > maxId then
-                maxId = w.id
-            end
-            table.insert(newHired, w)
         end
 
-        self.hiredWorkers = newHired
-    else
-        self.hiredWorkers = {}
-        for _, wd in ipairs(data.hiredWorkers or {}) do
-            local w = advancedHelperWorker.new()
-            w.id = wd.id
-            w.firstName = wd.firstName or ""
-            w.lastName = wd.lastName or ""
-            w.gender = wd.gender or "M"
-            w.efficiency = wd.efficiency or 5
-            w.driving = wd.driving or 5
-            w.skill = wd.skill or 5
-            w.monthlySalary = wd.monthlySalary or advancedHelperWorker.BASE_SALARY
-            w.isHired = true
-            w.hireDay = wd.hireDay or 0
-            w.farmId = wd.farmId or FarmManager.SINGLEPLAYER_FARM_ID
-            w.isAssigned = wd.isAssigned or false
-            w.assignSource = wd.assignSource or ""
-            w.assignedVehicle = nil
-            w.helperIndex = nil
-            w.helperName = nil
-
-            if w.isAssigned and wd.assignedVehicleId ~= nil then
-                local vehicle = NetworkUtil.getObject(wd.assignedVehicleId)
-                if vehicle ~= nil then
-                    w.assignedVehicle = vehicle
-                else
-                    w.isAssigned = false
-                end
-            end
-
-            if w.id > maxId then
-                maxId = w.id
-            end
-            table.insert(self.hiredWorkers, w)
+        if w.id > maxId then
+            maxId = w.id
         end
+
+        table.insert(self.hiredWorkers, w)
     end
 
-    self.applicants = {}
     for _, ad in ipairs(data.applicants or {}) do
         local a = advancedHelperWorker.new()
         a.id = ad.id

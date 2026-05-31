@@ -39,6 +39,7 @@ function advancedHelper:loadMap()
     g_messageCenter:subscribe(MessageType.AI_JOB_STARTED, advancedHelperSpeedHook.onAIJobStarted)
     g_messageCenter:subscribe(MessageType.AI_JOB_STOPPED, advancedHelperSpeedHook.onAIJobStopped)
 
+    advancedHelper:installVehicleEventListeners()
     advancedHelper:installPlayerInputHook()
 
     ItemSystem.save = Utils.prependedFunction(ItemSystem.save, advancedHelper.onSaveGame)
@@ -57,6 +58,7 @@ function advancedHelper:deleteMap()
     advancedHelperAutoDriveHook.uninstall()
     advancedHelperCourseplayHook.uninstall()
     advancedHelper:uninstallPlayerInputHook()
+    advancedHelperHud._eventListenersInstalled = false
 end
 
 function advancedHelper:update(dt)
@@ -65,6 +67,9 @@ function advancedHelper:update(dt)
     end
     if not advancedHelperCourseplayHook.eventListenersInstalled and advancedHelperCourseplayHook.isCPLoaded() then
         advancedHelperCourseplayHook.installEventListenersOnly()
+    end
+    if not advancedHelperHud._eventListenersInstalled then
+        advancedHelper:installVehicleEventListeners()
     end
 
     if g_server ~= nil and g_currentMission ~= nil then
@@ -84,43 +89,6 @@ function advancedHelper:update(dt)
 
     advancedHelperPayroll.update(dt)
     advancedHelper.cancelOrphanedAIJobs()
-
-    if advancedHelperConfig.DEBUG then
-        advancedHelper._speedCheckCounter = (advancedHelper._speedCheckCounter or 0) + 1
-        if advancedHelper._speedCheckCounter >= 200 then
-            advancedHelper._speedCheckCounter = 0
-            for _, w in ipairs(advancedHelperManager.hiredWorkers) do
-                if w.isAssigned and w.assignedVehicle ~= nil and w:getSpeedMultiplier() < 1.0 then
-                    local v = w.assignedVehicle
-                    local function checkObj(obj, label)
-                        if obj ~= nil and obj.speedLimit ~= nil and obj.speedLimit ~= math.huge then
-                            local orig = advancedHelperSpeedHook.originalSpeedLimits[obj]
-                            if orig ~= nil and obj.speedLimit >= orig then
-                                advancedHelperDebug.log(string.format(
-                                    "SPEED CHECK: %s | %s %s speedLimit=%.1f == orig=%.1f (NOT modified! expected=%.1f)",
-                                    w:getFullName(), label, obj:getName(), obj.speedLimit, orig, orig * w:getSpeedMultiplier()))
-                            end
-                        end
-                    end
-                    checkObj(v, "veh")
-                    if v.getAttachedImplements ~= nil then
-                        for _, impl in ipairs(v:getAttachedImplements()) do
-                            checkObj(impl.object, "impl")
-                        end
-                    end
-                    local root = v.rootVehicle
-                    if root ~= nil and root ~= v then
-                        checkObj(root, "root")
-                        if root.getAttachedImplements ~= nil then
-                            for _, impl in ipairs(root:getAttachedImplements()) do
-                                checkObj(impl.object, "rootimpl")
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
 end
 
 function advancedHelper.onToggleHud()
@@ -129,6 +97,43 @@ end
 
 function advancedHelper.onToggleCursor()
     advancedHelperHud:toggleCursor()
+end
+
+function advancedHelper:installVehicleEventListeners()
+    if advancedHelperHud._eventListenersInstalled then
+        return
+    end
+    if g_vehicleTypeManager == nil or g_vehicleTypeManager.types == nil then
+        return
+    end
+    for _, vehicleType in pairs(g_vehicleTypeManager.types) do
+        SpecializationUtil.registerEventListener(vehicleType, "onEnterVehicle", advancedHelper)
+        SpecializationUtil.registerEventListener(vehicleType, "onLeaveVehicle", advancedHelper)
+    end
+    advancedHelperHud._eventListenersInstalled = true
+    advancedHelperDebug.log("Vehicle event listeners installed for onEnterVehicle/onLeaveVehicle")
+end
+
+function advancedHelper.onEnterVehicle(_, isControlling)
+    if not isControlling then
+        return
+    end
+    if advancedHelperHud.wasVisibleBeforeExit then
+        advancedHelperHud.isVisible = true
+        advancedHelperHud.wasVisibleBeforeExit = false
+    end
+end
+
+function advancedHelper.onLeaveVehicle(_, wasEntered)
+    if not wasEntered then
+        return
+    end
+    if advancedHelperHud.isVisible then
+        advancedHelperHud.wasVisibleBeforeExit = true
+    end
+    advancedHelperHud.isVisible = false
+    advancedHelperHud.cursorVisible = false
+    g_inputBinding:setShowMouseCursor(false)
 end
 
 function advancedHelper:draw()

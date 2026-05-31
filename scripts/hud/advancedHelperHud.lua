@@ -172,6 +172,7 @@ end
 function advancedHelperHud:toggle()
     advancedHelperHud.isVisible = not advancedHelperHud.isVisible
     if not advancedHelperHud.isVisible then
+        advancedHelperHud.wasVisibleBeforeExit = false
         advancedHelperHud.cursorVisible = false
         g_inputBinding:setShowMouseCursor(false)
     end
@@ -184,6 +185,7 @@ end
 
 function advancedHelperHud:hide()
     advancedHelperHud.isVisible = false
+    advancedHelperHud.wasVisibleBeforeExit = false
     advancedHelperHud.cursorVisible = false
     g_inputBinding:setShowMouseCursor(false)
 end
