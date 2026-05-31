@@ -2,7 +2,6 @@ advancedHelperAutoDriveHook = {}
 
 advancedHelperAutoDriveHook.isInstalled = false
 advancedHelperAutoDriveHook.hookedVehicleTypes = {}
-advancedHelperAutoDriveHook.hookedCheckAddHelper = false
 advancedHelperAutoDriveHook.activeADCount = 0
 
 function advancedHelperAutoDriveHook.isADLoaded()
@@ -20,52 +19,13 @@ function advancedHelperAutoDriveHook.hasADSpecialization(vehicle)
 end
 
 function advancedHelperAutoDriveHook.install()
-    if not advancedHelperConfig.INFILTRATE_AUTODRIVE then
-        advancedHelperAutoDriveHook.installMinimal()
-        return
-    end
-
     if not advancedHelperAutoDriveHook.isADLoaded() then
         advancedHelperDebug.log("ADHOOK: AutoDrive not loaded, skipping install")
         return
     end
 
-    if AutoDrive == nil then
-        advancedHelperDebug.log("ADHOOK: AutoDrive global not available, trying event listeners only")
-        advancedHelperAutoDriveHook.installEventListenersOnly()
-        return
-    end
-
-    if g_vehicleTypeManager == nil then
-        return
-    end
-
-    advancedHelperAutoDriveHook.hookedVehicleTypes = {}
-
-    for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
-        if SpecializationUtil.hasSpecialization(AutoDrive, vehicleType.specializations) then
-            advancedHelperAutoDriveHook:installTypeHooks(vehicleType)
-            advancedHelperAutoDriveHook.hookedVehicleTypes[typeName] = true
-        end
-    end
-
-    if AutoDrive.checkAddHelper ~= nil then
-        AutoDrive.checkAddHelper = Utils.overwrittenFunction(
-            AutoDrive.checkAddHelper, advancedHelperAutoDriveHook.checkAddHelperOverride)
-        advancedHelperAutoDriveHook.hookedCheckAddHelper = true
-    end
-
-    advancedHelperAutoDriveHook.isInstalled = true
-    advancedHelperDebug.log(string.format("ADHOOK: installed (infiltrate=true, types=%d, checkAddHelper=%s)",
-        advancedHelperAutoDriveHook:countHookedTypes(), tostring(advancedHelperAutoDriveHook.hookedCheckAddHelper)))
-end
-
-function advancedHelperAutoDriveHook.installMinimal()
-    if not advancedHelperAutoDriveHook.isADLoaded() then
-        return
-    end
-
     if AutoDrive == nil or g_vehicleTypeManager == nil then
+        advancedHelperDebug.log("ADHOOK: AutoDrive global or vehicleTypeManager not available, retrying later")
         return
     end
 
@@ -81,7 +41,8 @@ function advancedHelperAutoDriveHook.installMinimal()
 
     advancedHelperAutoDriveHook.isInstalled = true
     advancedHelperAutoDriveHook.eventListenersInstalled = true
-    advancedHelperDebug.log(string.format("ADHOOK: installed minimal (infiltrate=false, types=%d) — only AD counter",
+    advancedHelperDebug.log(string.format("ADHOOK: installed (infiltrate=%s, types=%d)",
+        tostring(advancedHelperConfig.INFILTRATE_AUTODRIVE),
         advancedHelperAutoDriveHook:countHookedTypes()))
 end
 
@@ -122,25 +83,10 @@ function advancedHelperAutoDriveHook.installEventListenersOnly()
         advancedHelperAutoDriveHook:countHookedTypes()))
 end
 
-function advancedHelperAutoDriveHook:installTypeHooks(vehicleType)
-    if vehicleType == nil then
-        return
-    end
-
-    if vehicleType.startAutoDrive ~= nil then
-        vehicleType.startAutoDrive = Utils.overwrittenFunction(
-            vehicleType.startAutoDrive, advancedHelperAutoDriveHook.startAutoDriveOverride)
-    end
-
-    SpecializationUtil.registerEventListener(vehicleType, "onStartAutoDrive", advancedHelperAutoDriveHook)
-    SpecializationUtil.registerEventListener(vehicleType, "onStopAutoDrive", advancedHelperAutoDriveHook)
-end
-
 function advancedHelperAutoDriveHook.uninstall()
     advancedHelperAutoDriveHook.isInstalled = false
     advancedHelperAutoDriveHook.eventListenersInstalled = false
     advancedHelperAutoDriveHook.hookedVehicleTypes = {}
-    advancedHelperAutoDriveHook.hookedCheckAddHelper = false
     advancedHelperAutoDriveHook.activeADCount = 0
     advancedHelperDebug.log("ADHOOK: uninstalled")
 end
@@ -153,30 +99,6 @@ function advancedHelperAutoDriveHook:countHookedTypes()
     return count
 end
 
-function advancedHelperAutoDriveHook.startAutoDriveOverride(self, superFunc)
-    local farmId = self:getOwnerFarmId()
-    if farmId == nil then
-        farmId = g_currentMission:getFarmId()
-    end
-
-    local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
-    if #freeWorkers == 0 then
-        if g_currentMission ~= nil then
-            g_currentMission:addIngameNotification(
-                FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
-                g_i18n:getText("advancedHelper_allWorkersBusy"))
-        end
-        advancedHelperDebug.log(string.format("ADHOOK: BLOCKED startAutoDrive for %s (no free workers for farm %d)",
-            self:getName(), farmId or -1))
-        return
-    end
-
-    superFunc(self)
-
-    advancedHelperDebug.log(string.format("ADHOOK: startAutoDrive allowed for %s (free workers=%d)",
-        self:getName(), #freeWorkers))
-end
-
 function advancedHelperAutoDriveHook:onStartAutoDrive()
     if g_server == nil then
         return
@@ -186,7 +108,7 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
     advancedHelperAutoDriveHook.activeADCount = advancedHelperAutoDriveHook.activeADCount + 1
 
     if not advancedHelperConfig.INFILTRATE_AUTODRIVE then
-        advancedHelperDebug.log(string.format("ADHOOK: onStartAutoDrive minimal — count=%d vehicle=%s",
+        advancedHelperDebug.log(string.format("ADHOOK: count=%d vehicle=%s",
             advancedHelperAutoDriveHook.activeADCount, vehicle:getName()))
         return
     end
@@ -212,13 +134,8 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
             worker.isAssigned = true
             worker.assignedVehicle = vehicle
             worker.assignSource = "AD"
-            advancedHelperDebug.log(string.format("ADHOOK: ASSIGN %s -> %s (helperIndex=%d, source=AD)",
-                worker:getFullName(), vehicle:getName(), helperIndex))
-        else
-            advancedHelperDebug.log(string.format("ADHOOK: ASSIGN %s already assigned to %s (helperIndex=%d)",
-                worker:getFullName(),
-                worker.assignedVehicle and worker.assignedVehicle:getName() or "?",
-                helperIndex))
+            advancedHelperDebug.log(string.format("ADHOOK: ASSIGN %s -> %s (source=AD)",
+                worker:getFullName(), vehicle:getName()))
         end
 
         advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
@@ -228,7 +145,7 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
             local speedMult = worker:getSpeedMultiplier()
             local speedPct = speedMult >= 1.0 and 0 or (1 - speedMult) * 100
             advancedHelperDebug.log(string.format(
-                "ADHOOK: AD START %s on %s | Eff=%d->Sprit %+.1f%% | Fahr=%d->Tempo -%.1f%% | Koennen=%d->Verschleiss %+.1f%%",
+                "ADHOOK: START %s on %s | Eff=%d->Sprit %+.1f%% | Fahr=%d->Tempo -%.1f%% | Koennen=%d->Verschleiss %+.1f%%",
                 worker:getFullName(), vehicle:getName(),
                 worker.efficiency, (worker:getFuelMultiplier() - 1) * 100,
                 worker.driving, speedPct,
@@ -236,8 +153,8 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
             ))
         end
     else
-        advancedHelperDebug.log(string.format("ADHOOK: onStartAutoDrive — no worker found for helperIndex=%d vehicle=%s",
-            helperIndex, vehicle:getName()))
+        advancedHelperDebug.log(string.format("ADHOOK: STOP %s (no free workers)", vehicle:getName()))
+        pcall(function() vehicle:stopAutoDrive() end)
     end
 end
 
@@ -250,7 +167,7 @@ function advancedHelperAutoDriveHook:onStopAutoDrive()
     advancedHelperAutoDriveHook.activeADCount = math.max(0, advancedHelperAutoDriveHook.activeADCount - 1)
 
     if not advancedHelperConfig.INFILTRATE_AUTODRIVE then
-        advancedHelperDebug.log(string.format("ADHOOK: onStopAutoDrive minimal — count=%d vehicle=%s",
+        advancedHelperDebug.log(string.format("ADHOOK: count=%d vehicle=%s",
             advancedHelperAutoDriveHook.activeADCount, vehicle:getName()))
         return
     end
@@ -281,13 +198,6 @@ function advancedHelperAutoDriveHook:onStopAutoDrive()
 
     advancedHelperSpeedHook.restoreSpeedModification(vehicle)
     advancedHelperSyncEvent.broadcast()
-end
-
-function advancedHelperAutoDriveHook.checkAddHelperOverride(vehicle, superFunc, helperIndex, numHelpersToAdd)
-    advancedHelperDebug.log(string.format("ADHOOK: checkAddHelper BLOCKED (vehicle=%s helperIndex=%s numToAdd=%s)",
-        vehicle and vehicle:getName() or "nil",
-        tostring(helperIndex), tostring(numHelpersToAdd)))
-    return nil
 end
 
 function advancedHelperAutoDriveHook.startWorkerOnAD(workerId, vehicle)
