@@ -84,6 +84,43 @@ function advancedHelper:update(dt)
 
     advancedHelperPayroll.update(dt)
     advancedHelper.cancelOrphanedAIJobs()
+
+    if advancedHelperConfig.DEBUG then
+        advancedHelper._speedCheckCounter = (advancedHelper._speedCheckCounter or 0) + 1
+        if advancedHelper._speedCheckCounter >= 200 then
+            advancedHelper._speedCheckCounter = 0
+            for _, w in ipairs(advancedHelperManager.hiredWorkers) do
+                if w.isAssigned and w.assignedVehicle ~= nil and w:getSpeedMultiplier() < 1.0 then
+                    local v = w.assignedVehicle
+                    local function checkObj(obj, label)
+                        if obj ~= nil and obj.speedLimit ~= nil and obj.speedLimit ~= math.huge then
+                            local orig = advancedHelperSpeedHook.originalSpeedLimits[obj]
+                            if orig ~= nil and obj.speedLimit >= orig then
+                                advancedHelperDebug.log(string.format(
+                                    "SPEED CHECK: %s | %s %s speedLimit=%.1f == orig=%.1f (NOT modified! expected=%.1f)",
+                                    w:getFullName(), label, obj:getName(), obj.speedLimit, orig, orig * w:getSpeedMultiplier()))
+                            end
+                        end
+                    end
+                    checkObj(v, "veh")
+                    if v.getAttachedImplements ~= nil then
+                        for _, impl in ipairs(v:getAttachedImplements()) do
+                            checkObj(impl.object, "impl")
+                        end
+                    end
+                    local root = v.rootVehicle
+                    if root ~= nil and root ~= v then
+                        checkObj(root, "root")
+                        if root.getAttachedImplements ~= nil then
+                            for _, impl in ipairs(root:getAttachedImplements()) do
+                                checkObj(impl.object, "rootimpl")
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
 end
 
 function advancedHelper.onToggleHud()
