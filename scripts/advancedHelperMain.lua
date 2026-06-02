@@ -1,6 +1,7 @@
 advancedHelper = {}
 advancedHelper.modDirectory = g_currentModDirectory
 advancedHelper.modName = g_currentModName
+advancedHelper.localPlayerVehicle = nil
 
 source(advancedHelper.modDirectory .. "scripts/advancedHelperConfig.lua")
 source(advancedHelper.modDirectory .. "scripts/advancedHelperDebug.lua")
@@ -62,15 +63,12 @@ function advancedHelper:deleteMap()
 end
 
 function advancedHelper:update(dt)
-    if not advancedHelperAutoDriveHook.eventListenersInstalled and advancedHelperAutoDriveHook.isADLoaded() then
-        advancedHelperAutoDriveHook.installEventListenersOnly()
-    end
-    if not advancedHelperCourseplayHook.eventListenersInstalled and advancedHelperCourseplayHook.isCPLoaded() then
-        advancedHelperCourseplayHook.installEventListenersOnly()
-    end
     if not advancedHelperHud._eventListenersInstalled then
         advancedHelper:installVehicleEventListeners()
     end
+
+    advancedHelperAutoDriveHook.processDeferredStops()
+    advancedHelperSpeedHook.processDeferredStops()
 
     if g_server ~= nil and g_currentMission ~= nil then
         local target = #advancedHelperManager.hiredWorkers
@@ -114,20 +112,28 @@ function advancedHelper:installVehicleEventListeners()
     advancedHelperDebug.log("Vehicle event listeners installed for onEnterVehicle/onLeaveVehicle")
 end
 
-function advancedHelper.onEnterVehicle(_, isControlling)
+function advancedHelper.onEnterVehicle(self, isControlling)
     if not isControlling then
         return
     end
+    if g_localPlayer == nil or g_localPlayer:getCurrentVehicle() ~= self then
+        return
+    end
+    advancedHelper.localPlayerVehicle = self
     if advancedHelperHud.wasVisibleBeforeExit then
         advancedHelperHud.isVisible = true
         advancedHelperHud.wasVisibleBeforeExit = false
     end
 end
 
-function advancedHelper.onLeaveVehicle(_, wasEntered)
+function advancedHelper.onLeaveVehicle(self, wasEntered)
     if not wasEntered then
         return
     end
+    if advancedHelper.localPlayerVehicle ~= self then
+        return
+    end
+    advancedHelper.localPlayerVehicle = nil
     if advancedHelperHud.isVisible then
         advancedHelperHud.wasVisibleBeforeExit = true
     end
@@ -143,7 +149,7 @@ function advancedHelper:draw()
     end
     new2DLayer()
     advancedHelperHud:draw()
-    if advancedHelperHud.cursorVisible and g_inputBinding ~= nil then
+    if advancedHelperHud.cursorVisible and advancedHelper.localPlayerVehicle ~= nil and g_inputBinding ~= nil then
         g_inputBinding:setShowMouseCursor(true)
     end
 end

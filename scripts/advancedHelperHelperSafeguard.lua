@@ -28,7 +28,7 @@ function advancedHelperHelperSafeguard.getRandomHelperStyle(self, superFunc)
     return superFunc(self)
 end
 
-function advancedHelperHelperSafeguard.hasWorkersForVehicle(vehicle)
+function advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(vehicle)
     if #advancedHelperManager.hiredWorkers == 0 then
         return false
     end
@@ -36,22 +36,22 @@ function advancedHelperHelperSafeguard.hasWorkersForVehicle(vehicle)
     if farmId == nil then
         return false
     end
-    return advancedHelperManager:getWorkerCountForFarm(farmId) > 0
+    return #advancedHelperManager:getFreeWorkersForFarm(farmId) > 0
 end
 
 function advancedHelperHelperSafeguard.getCanStartAIVehicle(self, superFunc, ...)
-    local hasWorkers = advancedHelperHelperSafeguard.hasWorkersForVehicle(self)
+    local hasWorkers = advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(self)
     if not hasWorkers then
-        advancedHelperDebug.log(string.format("getCanStartAIVehicle: BLOCKED (no workers for farm) vehicle=%s", self:getName()))
+        advancedHelperDebug.log(string.format("getCanStartAIVehicle: BLOCKED (no free workers) vehicle=%s", self:getName()))
         return false
     end
     local result = superFunc(self, ...)
-    advancedHelperDebug.log(string.format("getCanStartAIVehicle: %s (hasWorkers=true) vehicle=%s", tostring(result), self:getName()))
+    advancedHelperDebug.log(string.format("getCanStartAIVehicle: %s (hasFreeWorkers=true) vehicle=%s", tostring(result), self:getName()))
     return result
 end
 
 function advancedHelperHelperSafeguard.getShowAIToggleActionEvent(self, superFunc, ...)
-    local hasWorkers = advancedHelperHelperSafeguard.hasWorkersForVehicle(self)
+    local hasWorkers = advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(self)
     if not hasWorkers then
         return false
     end
@@ -73,7 +73,15 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
     if #advancedHelperManager.hiredWorkers == 0 then
         return
     end
-    if advancedHelperManager:getWorkerCountForFarm(farmId) == 0 then
+    local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
+    if #freeWorkers == 0 then
+        local vehicle = advancedHelperHelperSafeguard.getVehicleFromJob(self)
+        if vehicle ~= nil then
+            g_currentMission:addIngameNotification(
+                FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
+                g_i18n:getText("advancedHelper_allWorkersBusy"))
+        end
+        advancedHelperDebug.log(string.format("aiJobStart: BLOCKED — no free workers for farm %d", farmId or -1))
         return
     end
 
@@ -137,7 +145,11 @@ end
 function advancedHelperHelperSafeguard.getPricePerMs(self, superFunc)
     if #advancedHelperManager.hiredWorkers > 0 then
         local farmId = self.startedFarmId
-        if farmId ~= nil and advancedHelperManager:getWorkerCountForFarm(farmId) > 0 then
+        if farmId ~= nil then
+            if advancedHelperManager:getWorkerCountForFarm(farmId) > 0 then
+                return 0
+            end
+        else
             return 0
         end
     end

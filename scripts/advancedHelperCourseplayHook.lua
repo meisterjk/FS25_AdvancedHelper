@@ -5,6 +5,7 @@ advancedHelperCourseplayHook.COLOR_CP = {0.6, 0.4, 0.2, 0.95}
 advancedHelperCourseplayHook.isInstalled = false
 advancedHelperCourseplayHook.hookedVehicleTypes = {}
 advancedHelperCourseplayHook.activeCPCount = 0
+advancedHelperCourseplayHook.CP_SPEC_NAME = "FS25_Courseplay.cpAIWorker"
 
 function advancedHelperCourseplayHook.isCPLoaded()
     return g_modIsLoaded ~= nil and g_modIsLoaded["FS25_Courseplay"]
@@ -14,10 +15,28 @@ function advancedHelperCourseplayHook.hasCPSpecialization(vehicle)
     if vehicle == nil then
         return false
     end
-    if g_Courseplay == nil then
+    return vehicle.spec_cpAIWorker ~= nil
+end
+
+function advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType)
+    if vehicleType == nil then
         return false
     end
-    return vehicle.spec_cpAIWorker ~= nil
+    if vehicleType.specializationsByName[advancedHelperCourseplayHook.CP_SPEC_NAME] ~= nil then
+        return true
+    end
+    if vehicleType.specializationsByName["cpAIWorker"] ~= nil then
+        return true
+    end
+    for specName, _ in pairs(vehicleType.specializationsByName) do
+        local len = string.len(specName)
+        local suffix = ".cpAIWorker"
+        local suffixLen = string.len(suffix)
+        if len >= suffixLen and string.sub(specName, len - suffixLen + 1) == suffix then
+            return true
+        end
+    end
+    return false
 end
 
 function advancedHelperCourseplayHook.canStartCPOnVehicle(vehicle)
@@ -42,23 +61,17 @@ function advancedHelperCourseplayHook.canStartCPOnVehicle(vehicle)
     return true
 end
 
--------------------------------------------------------------------------------
--- Install
--------------------------------------------------------------------------------
-
 function advancedHelperCourseplayHook.install()
+    if advancedHelperCourseplayHook.isInstalled then
+        return
+    end
+
     if not advancedHelperCourseplayHook.isCPLoaded() then
-        advancedHelperDebug.log("CPHOOK: Courseplay not loaded, skipping install")
+        advancedHelperCourseplayHook.isInstalled = true
         return
     end
 
     if g_vehicleTypeManager == nil then
-        return
-    end
-
-    if CpAIWorker == nil then
-        advancedHelperDebug.log("CPHOOK: CpAIWorker not available, trying event listeners only")
-        advancedHelperCourseplayHook.installEventListenersOnly()
         return
     end
 
@@ -70,18 +83,17 @@ function advancedHelperCourseplayHook.install()
     advancedHelperCourseplayHook.hookedVehicleTypes = {}
 
     for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
-        if SpecializationUtil.hasSpecialization(CpAIWorker, vehicleType.specializations) then
-            advancedHelperCourseplayHook:installTypeHooks(vehicleType)
+        if advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType) then
+            SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpFuelEmpty", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpBroken", advancedHelperCourseplayHook)
             advancedHelperCourseplayHook.hookedVehicleTypes[typeName] = true
         end
     end
 
-    CpAIWorker.cpStartStopDriver = Utils.overwrittenFunction(
-        CpAIWorker.cpStartStopDriver, advancedHelperCourseplayHook.cpStartStopDriverOverride)
-
     advancedHelperCourseplayHook.isInstalled = true
     advancedHelperCourseplayHook.eventListenersInstalled = true
-    advancedHelperDebug.log(string.format("CPHOOK: installed (infiltrate=true, types=%d)",
+    advancedHelperDebug.log(string.format("CPHOOK: installed observer mode (types=%d)",
         advancedHelperCourseplayHook:countHookedTypes()))
 end
 
@@ -90,14 +102,10 @@ function advancedHelperCourseplayHook.installMinimal()
         return
     end
 
-    if CpAIWorker == nil then
-        return
-    end
-
     advancedHelperCourseplayHook.hookedVehicleTypes = {}
 
     for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
-        if SpecializationUtil.hasSpecialization(CpAIWorker, vehicleType.specializations) then
+        if advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType) then
             SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
             advancedHelperCourseplayHook.hookedVehicleTypes[typeName] = true
         end
@@ -119,14 +127,11 @@ function advancedHelperCourseplayHook.installEventListenersOnly()
     if g_vehicleTypeManager == nil then
         return
     end
-    if CpAIWorker == nil then
-        return
-    end
 
     advancedHelperCourseplayHook.hookedVehicleTypes = {}
 
     for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
-        if SpecializationUtil.hasSpecialization(CpAIWorker, vehicleType.specializations) then
+        if advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType) then
             SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpFuelEmpty", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpBroken", advancedHelperCourseplayHook)
@@ -134,19 +139,13 @@ function advancedHelperCourseplayHook.installEventListenersOnly()
         end
     end
 
-    advancedHelperCourseplayHook.eventListenersInstalled = true
-    advancedHelperDebug.log(string.format("CPHOOK: event listeners only (types=%d)",
-        advancedHelperCourseplayHook:countHookedTypes()))
-end
-
-function advancedHelperCourseplayHook:installTypeHooks(vehicleType)
-    if vehicleType == nil then
+    if advancedHelperCourseplayHook:countHookedTypes() == 0 then
         return
     end
 
-    SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
-    SpecializationUtil.registerEventListener(vehicleType, "onCpFuelEmpty", advancedHelperCourseplayHook)
-    SpecializationUtil.registerEventListener(vehicleType, "onCpBroken", advancedHelperCourseplayHook)
+    advancedHelperCourseplayHook.eventListenersInstalled = true
+    advancedHelperDebug.log(string.format("CPHOOK: event listeners only (types=%d)",
+        advancedHelperCourseplayHook:countHookedTypes()))
 end
 
 function advancedHelperCourseplayHook.uninstall()
@@ -164,40 +163,6 @@ function advancedHelperCourseplayHook:countHookedTypes()
     end
     return count
 end
-
--------------------------------------------------------------------------------
--- Hook: cpStartStopDriver — block CP start when no free workers
--------------------------------------------------------------------------------
-
-function advancedHelperCourseplayHook.cpStartStopDriverOverride(self, superFunc, isStartedByHud)
-    if isStartedByHud and not self:getIsAIActive() then
-        local farmId = self:getOwnerFarmId()
-        if farmId == nil then
-            farmId = g_currentMission:getFarmId()
-        end
-
-        local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
-        if #freeWorkers == 0 then
-            if g_currentMission ~= nil then
-                g_currentMission:addIngameNotification(
-                    FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
-                    g_i18n:getText("advancedHelper_allWorkersBusy"))
-            end
-            advancedHelperDebug.log(string.format("CPHOOK: BLOCKED cpStartStopDriver for %s (no free workers for farm %d)",
-                self:getName(), farmId or -1))
-            return
-        end
-
-        advancedHelperDebug.log(string.format("CPHOOK: cpStartStopDriver allowed for %s (free workers=%d)",
-            self:getName(), #freeWorkers))
-    end
-
-    superFunc(self, isStartedByHud)
-end
-
--------------------------------------------------------------------------------
--- Vehicle Events: onCpFinished / onCpFuelEmpty / onCpBroken
--------------------------------------------------------------------------------
 
 function advancedHelperCourseplayHook:onCpFinished()
     if g_server == nil then
@@ -283,33 +248,23 @@ function advancedHelperCourseplayHook:onCpBroken()
     end
 end
 
--------------------------------------------------------------------------------
--- Start a worker with Courseplay
--------------------------------------------------------------------------------
-
 function advancedHelperCourseplayHook.startWorkerOnCP(workerId, vehicle)
     if g_server == nil then
-        advancedHelperDebug.log("CPHOOK: startWorkerOnCP blocked — client-only call")
         return
     end
     if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
-        advancedHelperDebug.log("CPHOOK: startWorkerOnCP blocked — INFILTRATE_COURSEPLAY=false")
         return
     end
 
     if vehicle == nil then
-        advancedHelperDebug.log("CPHOOK: startWorkerOnCP — no vehicle")
         return
     end
 
     if not advancedHelperCourseplayHook.hasCPSpecialization(vehicle) then
-        advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — vehicle %s has no CP specialization",
-            vehicle:getName()))
         return
     end
 
     if vehicle.getIsCpActive ~= nil and vehicle:getIsCpActive() then
-        advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — CP already active on %s", vehicle:getName()))
         return
     end
 
@@ -321,11 +276,9 @@ function advancedHelperCourseplayHook.startWorkerOnCP(workerId, vehicle)
         end
     end
     if worker == nil then
-        advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — worker not found id=%d", workerId))
         return
     end
     if worker.isAssigned then
-        advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — %s already assigned", worker:getFullName()))
         return
     end
 

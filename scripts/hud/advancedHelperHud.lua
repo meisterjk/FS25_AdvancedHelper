@@ -191,6 +191,11 @@ function advancedHelperHud:hide()
 end
 
 function advancedHelperHud:toggleCursor()
+    if not advancedHelperHud.isVisible or advancedHelper.localPlayerVehicle == nil then
+        advancedHelperHud.cursorVisible = false
+        g_inputBinding:setShowMouseCursor(false)
+        return
+    end
     advancedHelperHud.cursorVisible = not advancedHelperHud.cursorVisible
     g_inputBinding:setShowMouseCursor(advancedHelperHud.cursorVisible)
     advancedHelperDebug.log(string.format("HUD cursor toggle: cursor=%s", tostring(advancedHelperHud.cursorVisible)))

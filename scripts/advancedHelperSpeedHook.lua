@@ -1,5 +1,6 @@
 advancedHelperSpeedHook = {}
 advancedHelperSpeedHook.originalSpeedLimits = {}
+advancedHelperSpeedHook.vehiclesToStop = {}
 
 function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
     if g_server == nil then
@@ -24,21 +25,55 @@ function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
     if worker == nil then
         worker = advancedHelperManager:getWorkerByHelperIndex(job.helperIndex)
     end
+
     if worker == nil then
-        advancedHelperDebug.log("AI_JOB_STARTED: no worker found for " .. vehicle:getName())
+        if #advancedHelperManager.hiredWorkers > 0 then
+            advancedHelperDebug.log(string.format("AI_JOB_STARTED: no worker for helperIndex=%d vehicle=%s — stopping job",
+                job.helperIndex or -1, vehicle:getName()))
+            table.insert(advancedHelperSpeedHook.vehiclesToStop, vehicle)
+            if g_currentMission ~= nil then
+                g_currentMission:addIngameNotification(
+                    FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
+                    g_i18n:getText("advancedHelper_allWorkersBusy"))
+            end
+        end
         return
     end
 
-    if not worker.isAssigned then
-        worker.isAssigned = true
-        worker.assignedVehicle = vehicle
-        worker.assignSource = source
-        advancedHelperDebug.log(string.format("AI JOB ASSIGN: %s -> %s (source=%s)", worker:getFullName(), vehicle:getName(), source))
-        advancedHelperSyncEvent.broadcast()
-        advancedHelperAPI._fire("workerAssigned", advancedHelperAPI._copyWorker(worker), vehicle:getName())
+    if worker.isAssigned then
+        advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker %s already assigned to %s — stopping job for %s (source=%s)",
+            worker:getFullName(),
+            worker.assignedVehicle and worker.assignedVehicle:getName() or "?",
+            vehicle:getName(), source))
+        table.insert(advancedHelperSpeedHook.vehiclesToStop, vehicle)
+        if g_currentMission ~= nil then
+            g_currentMission:addIngameNotification(
+                FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
+                g_i18n:getText("advancedHelper_allWorkersBusy"))
+        end
+        return
     end
 
+    worker.isAssigned = true
+    worker.assignedVehicle = vehicle
+    worker.assignSource = source
+    advancedHelperDebug.log(string.format("AI JOB ASSIGN: %s -> %s (source=%s)", worker:getFullName(), vehicle:getName(), source))
+    advancedHelperSyncEvent.broadcast()
+    advancedHelperAPI._fire("workerAssigned", advancedHelperAPI._copyWorker(worker), vehicle:getName())
+
     advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+end
+
+function advancedHelperSpeedHook.processDeferredStops()
+    if #advancedHelperSpeedHook.vehiclesToStop == 0 then
+        return
+    end
+    local vehicles = advancedHelperSpeedHook.vehiclesToStop
+    advancedHelperSpeedHook.vehiclesToStop = {}
+    for _, vehicle in ipairs(vehicles) do
+        advancedHelperDebug.log(string.format("AI_JOB_STARTED: deferred stop for %s", vehicle:getName()))
+        vehicle:stopCurrentAIJob(AIMessageSuccessStoppedByUser.new())
+    end
 end
 
 function advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
