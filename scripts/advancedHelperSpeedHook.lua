@@ -27,31 +27,48 @@ function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
     end
 
     if worker == nil then
-        if #advancedHelperManager.hiredWorkers > 0 then
-            advancedHelperDebug.log(string.format("AI_JOB_STARTED: no worker for helperIndex=%d vehicle=%s — stopping job",
-                job.helperIndex or -1, vehicle:getName()))
+        local farmId = startFarmId or (vehicle:getOwnerFarmId())
+        local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
+        if #freeWorkers == 0 then
+            if #advancedHelperManager.hiredWorkers > 0 then
+                advancedHelperDebug.log(string.format("AI_JOB_STARTED: no worker and no free workers for helperIndex=%d vehicle=%s — stopping job",
+                    job.helperIndex or -1, vehicle:getName()))
+                table.insert(advancedHelperSpeedHook.vehiclesToStop, vehicle)
+                if g_currentMission ~= nil then
+                    g_currentMission:addIngameNotification(
+                        FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
+                        g_i18n:getText("advancedHelper_allWorkersBusy"))
+                end
+            end
+            return
+        end
+        worker = freeWorkers[1]
+        job.helperIndex = worker.helperIndex
+        advancedHelperDebug.log(string.format("AI_JOB_STARTED: substituted free worker %s (helperIndex=%d) for vehicle %s",
+            worker:getFullName(), worker.helperIndex, vehicle:getName()))
+    end
+
+    if worker.isAssigned then
+        local farmId = startFarmId or (vehicle:getOwnerFarmId())
+        local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
+        if #freeWorkers > 0 then
+            worker = freeWorkers[1]
+            job.helperIndex = worker.helperIndex
+            advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker was assigned, substituted free worker %s (helperIndex=%d) for vehicle %s",
+                worker:getFullName(), worker.helperIndex, vehicle:getName()))
+        else
+            advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker %s already assigned to %s and no free workers — stopping job for %s (source=%s)",
+                worker:getFullName(),
+                worker.assignedVehicle and worker.assignedVehicle:getName() or "?",
+                vehicle:getName(), source))
             table.insert(advancedHelperSpeedHook.vehiclesToStop, vehicle)
             if g_currentMission ~= nil then
                 g_currentMission:addIngameNotification(
                     FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
                     g_i18n:getText("advancedHelper_allWorkersBusy"))
             end
+            return
         end
-        return
-    end
-
-    if worker.isAssigned then
-        advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker %s already assigned to %s — stopping job for %s (source=%s)",
-            worker:getFullName(),
-            worker.assignedVehicle and worker.assignedVehicle:getName() or "?",
-            vehicle:getName(), source))
-        table.insert(advancedHelperSpeedHook.vehiclesToStop, vehicle)
-        if g_currentMission ~= nil then
-            g_currentMission:addIngameNotification(
-                FSBaseMission.INGAME_NOTIFICATION_CRITICAL,
-                g_i18n:getText("advancedHelper_allWorkersBusy"))
-        end
-        return
     end
 
     worker.isAssigned = true

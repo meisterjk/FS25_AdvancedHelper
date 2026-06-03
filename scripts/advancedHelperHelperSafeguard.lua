@@ -15,7 +15,21 @@ function advancedHelperHelperSafeguard.getRandomHelper(self, superFunc)
     if #self.availableHelpers == 0 then
         return nil
     end
-    return superFunc(self)
+    local result = superFunc(self)
+    if result ~= nil and #advancedHelperManager.hiredWorkers > 0 then
+        local worker = advancedHelperManager:getWorkerByHelperIndex(result.index)
+        if worker ~= nil and worker.isAssigned then
+            for _, h in ipairs(self.availableHelpers) do
+                local w = advancedHelperManager:getWorkerByHelperIndex(h.index)
+                if w ~= nil and not w.isAssigned then
+                    advancedHelperDebug.log(string.format("getRandomHelper: substituted free worker %s for assigned %s",
+                        w:getFullName(), worker:getFullName()))
+                    return h
+                end
+            end
+        end
+    end
+    return result
 end
 
 function advancedHelperHelperSafeguard.getRandomHelperStyle(self, superFunc)
@@ -93,7 +107,30 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
         if worker == nil then
             worker = advancedHelperManager:getWorkerByHelperIndex(self.helperIndex)
         end
+        if worker == nil then
+            worker = freeWorkers[1]
+            if worker ~= nil then
+                self.helperIndex = worker.helperIndex
+                advancedHelperDebug.log(string.format("aiJobStart: substituted free worker %s (helperIndex=%d)",
+                    worker:getFullName(), worker.helperIndex))
+            end
+        end
         if worker ~= nil then
+            if worker.isAssigned then
+                local subWorker = nil
+                for _, fw in ipairs(freeWorkers) do
+                    if not fw.isAssigned then
+                        subWorker = fw
+                        break
+                    end
+                end
+                if subWorker ~= nil then
+                    advancedHelperDebug.log(string.format("aiJobStart: substituted free worker %s for already-assigned %s",
+                        subWorker:getFullName(), worker:getFullName()))
+                    worker = subWorker
+                    self.helperIndex = worker.helperIndex
+                end
+            end
             if worker.helperIndex ~= nil then
                 self.helperIndex = worker.helperIndex
             end
