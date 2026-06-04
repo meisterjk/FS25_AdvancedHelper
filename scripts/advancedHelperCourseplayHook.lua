@@ -185,6 +185,7 @@ function advancedHelperCourseplayHook:onCpFinished()
         worker.assignedVehicle = nil
         worker.assignSource = ""
         advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+        advancedHelperHotspot:removeHotspot(vehicle)
         if g_server ~= nil then
             advancedHelperSyncEvent.broadcast()
             advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
@@ -213,6 +214,7 @@ function advancedHelperCourseplayHook:onCpFuelEmpty()
         worker.assignedVehicle = nil
         worker.assignSource = ""
         advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+        advancedHelperHotspot:removeHotspot(vehicle)
         if g_server ~= nil then
             advancedHelperSyncEvent.broadcast()
             advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
@@ -239,6 +241,7 @@ function advancedHelperCourseplayHook:onCpBroken()
         worker.assignedVehicle = nil
         worker.assignSource = ""
         advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+        advancedHelperHotspot:removeHotspot(vehicle)
         if g_server ~= nil then
             advancedHelperSyncEvent.broadcast()
             advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
@@ -289,6 +292,7 @@ function advancedHelperCourseplayHook.startWorkerOnCP(workerId, vehicle)
 
     advancedHelperManager:assignWorkerToVehicle(workerId, vehicle)
     advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+    advancedHelperHotspot:createHotspot(vehicle, worker, "CP")
 
     advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — starting CP for %s on %s",
         worker:getFullName(), vehicle:getName()))

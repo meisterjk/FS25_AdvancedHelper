@@ -116,6 +116,13 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
             end
         end
         if worker ~= nil then
+            local source = ""
+            if self.name ~= nil and string.find(self.name, "CP") then
+                source = "CP"
+            end
+            if source == "" and vehicle.ad ~= nil and vehicle.ad.stateModule ~= nil and vehicle.ad.stateModule:isActive() then
+                source = "AD"
+            end
             if worker.isAssigned then
                 local subWorker = nil
                 for _, fw in ipairs(freeWorkers) do
@@ -135,12 +142,14 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
                 self.helperIndex = worker.helperIndex
             end
             if not worker.isAssigned then
-                local source = ""
-                if self.name ~= nil and string.find(self.name, "CP") then
-                    source = "CP"
-                end
-                if source == "" and vehicle ~= nil and vehicle.ad ~= nil and vehicle.ad.stateModule ~= nil and vehicle.ad.stateModule:isActive() then
-                    source = "AD"
+                for _, w in ipairs(advancedHelperManager.hiredWorkers) do
+                    if w.assignedVehicle == vehicle and w.id ~= worker.id then
+                        advancedHelperDebug.log(string.format("aiJobStart: releasing previous worker %s from %s",
+                            w:getFullName(), vehicle:getName()))
+                        w.isAssigned = false
+                        w.assignedVehicle = nil
+                        w.assignSource = ""
+                    end
                 end
                 worker.isAssigned = true
                 worker.assignedVehicle = vehicle
@@ -152,6 +161,7 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
                 advancedHelperDebug.log(string.format("AI ASSIGN: %s helperIndex=%d on %s (already assigned)",
                     worker:getFullName(), worker.helperIndex, vehicle:getName()))
             end
+            advancedHelperHotspot:createHotspot(vehicle, worker, source)
         end
     end
 

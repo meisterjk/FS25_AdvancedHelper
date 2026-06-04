@@ -22,6 +22,14 @@ function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
     end
 
     local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
+    if worker ~= nil and worker.isAssigned and worker.assignedVehicle == vehicle then
+        advancedHelperDebug.log(string.format("AI_JOB_STARTED: %s already assigned to %s by aiJobStart — speed+hotspot only",
+            worker:getFullName(), vehicle:getName()))
+        advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+        advancedHelperHotspot:createHotspot(vehicle, worker, source)
+        return
+    end
+
     if worker == nil then
         worker = advancedHelperManager:getWorkerByHelperIndex(job.helperIndex)
     end
@@ -49,12 +57,17 @@ function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
     end
 
     if worker.isAssigned then
+        if worker.assignedVehicle == vehicle then
+            advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+            advancedHelperHotspot:createHotspot(vehicle, worker, source)
+            return
+        end
         local farmId = startFarmId or (vehicle:getOwnerFarmId())
         local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
         if #freeWorkers > 0 then
             worker = freeWorkers[1]
             job.helperIndex = worker.helperIndex
-            advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker was assigned, substituted free worker %s (helperIndex=%d) for vehicle %s",
+            advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker was assigned to other vehicle, substituted free worker %s (helperIndex=%d) for vehicle %s",
                 worker:getFullName(), worker.helperIndex, vehicle:getName()))
         else
             advancedHelperDebug.log(string.format("AI_JOB_STARTED: worker %s already assigned to %s and no free workers — stopping job for %s (source=%s)",
@@ -71,12 +84,12 @@ function advancedHelperSpeedHook.onAIJobStarted(job, startFarmId)
         end
     end
 
-    worker.isAssigned = true
-    worker.assignedVehicle = vehicle
+    advancedHelperManager:assignWorkerToVehicle(worker.id, vehicle)
     worker.assignSource = source
     advancedHelperDebug.log(string.format("AI JOB ASSIGN: %s -> %s (source=%s)", worker:getFullName(), vehicle:getName(), source))
     advancedHelperSyncEvent.broadcast()
     advancedHelperAPI._fire("workerAssigned", advancedHelperAPI._copyWorker(worker), vehicle:getName())
+    advancedHelperHotspot:createHotspot(vehicle, worker, source)
 
     advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
 end
@@ -171,6 +184,7 @@ function advancedHelperSpeedHook.onAIJobStopped(job, aiMessage)
 
     advancedHelperManager:unassignWorkerByVehicle(vehicle)
     advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+    advancedHelperHotspot:removeHotspot(vehicle)
     advancedHelperSyncEvent.broadcast()
 end
 

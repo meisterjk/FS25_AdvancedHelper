@@ -165,6 +165,10 @@ function advancedHelperManager:removeBaseHelpers()
     self.baseHelpersRemoved = true
 end
 
+function advancedHelperManager:formatHelperName(worker)
+    return "AH_" .. worker.id
+end
+
 function advancedHelperManager:generatePlayerStyle(worker)
     local styleList
     if worker.gender == "F" and #self.savedFemaleStyles > 0 then
@@ -203,7 +207,7 @@ end
 
 function advancedHelperManager:reAddWorkerHelpers()
     for _, worker in ipairs(self.hiredWorkers) do
-        local helperName = "ADVANCEDHELPERWORKER_" .. worker.id
+        local helperName = self:formatHelperName(worker)
         local color = {0.2, 0.6, 0.9}
         local playerStyle = self:generatePlayerStyle(worker)
 
@@ -289,7 +293,7 @@ function advancedHelperManager:hireApplicant(applicantId, farmId)
     applicant.hireDay = g_currentMission.environment.currentDay
     applicant.farmId = farmId or g_currentMission:getFarmId()
 
-    local helperName = "ADVANCEDHELPERWORKER_" .. applicant.id
+    local helperName = self:formatHelperName(applicant)
     local color = {0.2 + math.random() * 0.6, 0.2 + math.random() * 0.6, 0.2 + math.random() * 0.6}
     local playerStyle = self:generatePlayerStyle(applicant)
 
@@ -438,6 +442,15 @@ function advancedHelperManager:assignWorkerToVehicle(workerId, vehicle)
     if vehicle == nil then
         return false
     end
+    for _, w in ipairs(self.hiredWorkers) do
+        if w.assignedVehicle == vehicle and w.id ~= worker.id then
+            advancedHelperDebug.log(string.format("ASSIGN: releasing previous worker %s from %s",
+                w:getFullName(), vehicle:getName()))
+            w.isAssigned = false
+            w.assignedVehicle = nil
+            w.assignSource = ""
+        end
+    end
     worker.isAssigned = true
     worker.assignedVehicle = vehicle
     advancedHelperDebug.log(string.format("ASSIGN: %s -> %s", worker:getFullName(), vehicle:getName()))
@@ -475,21 +488,24 @@ function advancedHelperManager:unassignWorkerByVehicle(vehicle)
     if vehicle == nil then
         return false
     end
+    local found = false
+    local vehName = vehicle:getName()
     for _, w in ipairs(self.hiredWorkers) do
         if w.assignedVehicle == vehicle then
-            local vehName = vehicle:getName()
             w.isAssigned = false
             w.assignedVehicle = nil
             w.assignSource = ""
             advancedHelperDebug.log(string.format("UNASSIGN: %s (vehicle %s stopped)", w:getFullName(), vehName))
             if self:isServer() then
-                advancedHelperSyncEvent.broadcast()
                 advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(w), vehName)
             end
-            return true
+            found = true
         end
     end
-    return false
+    if found and self:isServer() then
+        advancedHelperSyncEvent.broadcast()
+    end
+    return found
 end
 
 function advancedHelperManager:updateDay()

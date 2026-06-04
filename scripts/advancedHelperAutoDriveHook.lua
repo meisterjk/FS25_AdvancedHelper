@@ -174,6 +174,15 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
 
     if worker ~= nil then
         if not worker.isAssigned then
+            for _, w in ipairs(advancedHelperManager.hiredWorkers) do
+                if w.assignedVehicle == vehicle and w.id ~= worker.id then
+                    advancedHelperDebug.log(string.format("ADHOOK: releasing previous worker %s from %s",
+                        w:getFullName(), vehicle:getName()))
+                    w.isAssigned = false
+                    w.assignedVehicle = nil
+                    w.assignSource = ""
+                end
+            end
             worker.isAssigned = true
             worker.assignedVehicle = vehicle
             worker.assignSource = "AD"
@@ -187,6 +196,7 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
         end
 
         advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+        advancedHelperHotspot:createHotspot(vehicle, worker, "AD")
         advancedHelperSyncEvent.broadcast()
 
         if advancedHelperConfig.DEBUG then
@@ -253,6 +263,7 @@ function advancedHelperAutoDriveHook:onStopAutoDrive()
     end
 
     advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+    advancedHelperHotspot:removeHotspot(vehicle)
     advancedHelperSyncEvent.broadcast()
 end
 
