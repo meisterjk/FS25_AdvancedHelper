@@ -166,7 +166,28 @@ function advancedHelperManager:removeBaseHelpers()
 end
 
 function advancedHelperManager:formatHelperName(worker)
-    return "AH_" .. worker.id
+    local function replaceUmlauts(s)
+        s = s:gsub("ä", "ae")
+        s = s:gsub("ö", "oe")
+        s = s:gsub("ü", "ue")
+        s = s:gsub("Ä", "Ae")
+        s = s:gsub("Ö", "Oe")
+        s = s:gsub("Ü", "Ue")
+        s = s:gsub("ß", "ss")
+        return s
+    end
+
+    local name = replaceUmlauts(worker.firstName) .. "_" .. replaceUmlauts(worker.lastName)
+    name = string.upper(name)
+
+    local baseName = name
+    local counter = 2
+    while g_helperManager.helpers[name] ~= nil do
+        name = baseName .. "_" .. counter
+        counter = counter + 1
+    end
+
+    return name
 end
 
 function advancedHelperManager:generatePlayerStyle(worker)
