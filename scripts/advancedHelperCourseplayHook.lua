@@ -61,6 +61,16 @@ function advancedHelperCourseplayHook.canStartCPOnVehicle(vehicle)
     return true
 end
 
+function advancedHelperCourseplayHook.isADActiveOnVehicle(vehicle)
+    if vehicle == nil then
+        return false
+    end
+    if vehicle.ad ~= nil and vehicle.ad.stateModule ~= nil and vehicle.ad.stateModule:isActive() then
+        return true
+    end
+    return false
+end
+
 function advancedHelperCourseplayHook.install()
     if advancedHelperCourseplayHook.isInstalled then
         return
@@ -85,6 +95,8 @@ function advancedHelperCourseplayHook.install()
     for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
         if advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType) then
             SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpEmpty", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpFull", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpFuelEmpty", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpBroken", advancedHelperCourseplayHook)
             advancedHelperCourseplayHook.hookedVehicleTypes[typeName] = true
@@ -133,6 +145,8 @@ function advancedHelperCourseplayHook.installEventListenersOnly()
     for typeName, vehicleType in pairs(g_vehicleTypeManager.types) do
         if advancedHelperCourseplayHook.vehicleTypeHasCP(vehicleType) then
             SpecializationUtil.registerEventListener(vehicleType, "onCpFinished", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpEmpty", advancedHelperCourseplayHook)
+            SpecializationUtil.registerEventListener(vehicleType, "onCpFull", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpFuelEmpty", advancedHelperCourseplayHook)
             SpecializationUtil.registerEventListener(vehicleType, "onCpBroken", advancedHelperCourseplayHook)
             advancedHelperCourseplayHook.hookedVehicleTypes[typeName] = true
@@ -164,6 +178,33 @@ function advancedHelperCourseplayHook:countHookedTypes()
     return count
 end
 
+function advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, eventName)
+    if advancedHelperCourseplayHook.isADActiveOnVehicle(vehicle) then
+        advancedHelperDebug.log(string.format("CPHOOK: %s — AD active on %s, keeping worker assigned",
+            eventName, vehicle:getName()))
+        return
+    end
+
+    local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
+    if worker ~= nil then
+        local vehName = vehicle:getName()
+        worker.isAssigned = false
+        worker.assignedVehicle = nil
+        worker.assignSource = ""
+        advancedHelperSpeedHook.restoreSpeedModification(vehicle)
+        advancedHelperHotspot:removeHotspot(vehicle)
+        if g_server ~= nil then
+            advancedHelperSyncEvent.broadcast()
+            advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
+        end
+        advancedHelperDebug.log(string.format("CPHOOK: %s — unassigned %s from %s",
+            eventName, worker:getFullName(), vehName))
+    else
+        advancedHelperDebug.log(string.format("CPHOOK: %s — no worker found for %s",
+            eventName, vehicle:getName()))
+    end
+end
+
 function advancedHelperCourseplayHook:onCpFinished()
     if g_server == nil then
         return
@@ -178,23 +219,37 @@ function advancedHelperCourseplayHook:onCpFinished()
         return
     end
 
-    local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
-    if worker ~= nil then
-        local vehName = vehicle:getName()
-        worker.isAssigned = false
-        worker.assignedVehicle = nil
-        worker.assignSource = ""
-        advancedHelperSpeedHook.restoreSpeedModification(vehicle)
-        advancedHelperHotspot:removeHotspot(vehicle)
-        if g_server ~= nil then
-            advancedHelperSyncEvent.broadcast()
-            advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
-        end
-        advancedHelperDebug.log(string.format("CPHOOK: onCpFinished — unassigned %s from %s",
-            worker:getFullName(), vehName))
-    else
-        advancedHelperDebug.log(string.format("CPHOOK: onCpFinished — no worker found for %s", vehicle:getName()))
+    advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, "onCpFinished")
+end
+
+function advancedHelperCourseplayHook:onCpEmpty()
+    if g_server == nil then
+        return
     end
+    local vehicle = self
+
+    advancedHelperCourseplayHook.activeCPCount = math.max(0, advancedHelperCourseplayHook.activeCPCount - 1)
+
+    if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
+        return
+    end
+
+    advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, "onCpEmpty")
+end
+
+function advancedHelperCourseplayHook:onCpFull()
+    if g_server == nil then
+        return
+    end
+    local vehicle = self
+
+    advancedHelperCourseplayHook.activeCPCount = math.max(0, advancedHelperCourseplayHook.activeCPCount - 1)
+
+    if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
+        return
+    end
+
+    advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, "onCpFull")
 end
 
 function advancedHelperCourseplayHook:onCpFuelEmpty()
@@ -203,25 +258,13 @@ function advancedHelperCourseplayHook:onCpFuelEmpty()
     end
     local vehicle = self
 
+    advancedHelperCourseplayHook.activeCPCount = math.max(0, advancedHelperCourseplayHook.activeCPCount - 1)
+
     if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
         return
     end
 
-    local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
-    if worker ~= nil then
-        local vehName = vehicle:getName()
-        worker.isAssigned = false
-        worker.assignedVehicle = nil
-        worker.assignSource = ""
-        advancedHelperSpeedHook.restoreSpeedModification(vehicle)
-        advancedHelperHotspot:removeHotspot(vehicle)
-        if g_server ~= nil then
-            advancedHelperSyncEvent.broadcast()
-            advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
-        end
-        advancedHelperDebug.log(string.format("CPHOOK: onCpFuelEmpty — unassigned %s from %s",
-            worker:getFullName(), vehName))
-    end
+    advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, "onCpFuelEmpty")
 end
 
 function advancedHelperCourseplayHook:onCpBroken()
@@ -230,25 +273,13 @@ function advancedHelperCourseplayHook:onCpBroken()
     end
     local vehicle = self
 
+    advancedHelperCourseplayHook.activeCPCount = math.max(0, advancedHelperCourseplayHook.activeCPCount - 1)
+
     if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
         return
     end
 
-    local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
-    if worker ~= nil then
-        local vehName = vehicle:getName()
-        worker.isAssigned = false
-        worker.assignedVehicle = nil
-        worker.assignSource = ""
-        advancedHelperSpeedHook.restoreSpeedModification(vehicle)
-        advancedHelperHotspot:removeHotspot(vehicle)
-        if g_server ~= nil then
-            advancedHelperSyncEvent.broadcast()
-            advancedHelperAPI._fire("workerUnassigned", advancedHelperAPI._copyWorker(worker), vehName)
-        end
-        advancedHelperDebug.log(string.format("CPHOOK: onCpBroken — unassigned %s from %s",
-            worker:getFullName(), vehName))
-    end
+    advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, "onCpBroken")
 end
 
 function advancedHelperCourseplayHook.startWorkerOnCP(workerId, vehicle)

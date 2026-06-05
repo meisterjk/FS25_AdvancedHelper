@@ -182,6 +182,11 @@ function advancedHelperSpeedHook.onAIJobStopped(job, aiMessage)
         return
     end
 
+    if vehicle.ad ~= nil and vehicle.ad.stateModule ~= nil and vehicle.ad.stateModule:isActive() then
+        advancedHelperDebug.log(string.format("AI_JOB_STOPPED: AD active on %s, keeping worker assigned", vehicle:getName()))
+        return
+    end
+
     advancedHelperManager:unassignWorkerByVehicle(vehicle)
     advancedHelperSpeedHook.restoreSpeedModification(vehicle)
     advancedHelperHotspot:removeHotspot(vehicle)
