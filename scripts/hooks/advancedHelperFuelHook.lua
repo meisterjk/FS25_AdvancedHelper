@@ -9,10 +9,7 @@ function advancedHelperFuelHook.updateConsumers(self, superFunc, dt, accInput)
     local fuelMult = 1.0
 
     if worker ~= nil then
-        local spec = self.spec_aiJobVehicle
-        if spec ~= nil and spec.job ~= nil then
-            fuelMult = worker:getFuelMultiplier()
-        end
+        fuelMult = worker:getFuelMultiplier()
     end
 
     if fuelMult ~= 1.0 and self.spec_motorized ~= nil then

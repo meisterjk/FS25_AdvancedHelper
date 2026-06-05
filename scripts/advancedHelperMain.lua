@@ -29,6 +29,7 @@ function advancedHelper:loadMap()
 
     advancedHelperFuelHook.install()
     advancedHelperDamageHook.install()
+    advancedHelperSpeedHook.install()
     advancedHelperHelperSafeguard.install()
     advancedHelperHotspot.install()
 
@@ -177,7 +178,6 @@ end
 
 function advancedHelper.onSaveGame()
     if g_server ~= nil then
-        advancedHelperSpeedHook.restoreAll()
         advancedHelperManager:saveState()
     end
 end

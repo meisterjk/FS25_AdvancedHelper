@@ -186,10 +186,9 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
 
     if worker ~= nil then
         if worker.isAssigned and worker.assignedVehicle == vehicle then
-            advancedHelperDebug.log(string.format("ADHOOK: %s already assigned to %s — speed+hotspot only (handoff)",
+            advancedHelperDebug.log(string.format("ADHOOK: %s already assigned to %s — hotspot only (handoff)",
                 worker:getFullName(), vehicle:getName()))
             worker.assignSource = "AD"
-            advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
             advancedHelperHotspot:createHotspot(vehicle, worker, "AD")
             advancedHelperSyncEvent.broadcast()
             return
@@ -217,7 +216,6 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
                 helperIndex))
         end
 
-        advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
         advancedHelperHotspot:createHotspot(vehicle, worker, "AD")
         advancedHelperSyncEvent.broadcast()
 
@@ -284,7 +282,6 @@ function advancedHelperAutoDriveHook:onStopAutoDrive()
         worker.assignSource = ""
     end
 
-    advancedHelperSpeedHook.restoreSpeedModification(vehicle)
     advancedHelperHotspot:removeHotspot(vehicle)
     advancedHelperSyncEvent.broadcast()
 end

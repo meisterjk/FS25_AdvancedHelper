@@ -191,7 +191,6 @@ function advancedHelperCourseplayHook:releaseWorkerFromCP(vehicle, eventName)
         worker.isAssigned = false
         worker.assignedVehicle = nil
         worker.assignSource = ""
-        advancedHelperSpeedHook.restoreSpeedModification(vehicle)
         advancedHelperHotspot:removeHotspot(vehicle)
         if g_server ~= nil then
             advancedHelperSyncEvent.broadcast()
@@ -322,7 +321,6 @@ function advancedHelperCourseplayHook.startWorkerOnCP(workerId, vehicle)
     end
 
     advancedHelperManager:assignWorkerToVehicle(workerId, vehicle)
-    advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
     advancedHelperHotspot:createHotspot(vehicle, worker, "CP")
 
     advancedHelperDebug.log(string.format("CPHOOK: startWorkerOnCP — starting CP for %s on %s",

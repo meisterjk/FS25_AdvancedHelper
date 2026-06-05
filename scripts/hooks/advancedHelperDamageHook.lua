@@ -13,11 +13,6 @@ function advancedHelperDamageHook.updateDamageAmount(self, superFunc, dt)
         return changeAmount or 0
     end
 
-    local spec = self.spec_aiJobVehicle
-    if spec == nil or spec.job == nil then
-        return changeAmount or 0
-    end
-
     local wearMult = worker:getWearMultiplier()
     if wearMult ~= 1.0 then
         changeAmount = (changeAmount or 0) * wearMult
@@ -31,11 +26,6 @@ function advancedHelperDamageHook.getWearMultiplier(self, superFunc)
 
     local worker = advancedHelperManager:getWorkerForVehicle(self)
     if worker == nil then
-        return multiplier
-    end
-
-    local spec = self.spec_aiJobVehicle
-    if spec == nil or spec.job == nil then
         return multiplier
     end
 
