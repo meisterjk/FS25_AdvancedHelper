@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="109">
     <author>mj</author>
-    <version>1.1.1.0</version>
+    <version>1.2.0.0</version>
     <title>
         <en>Advanced Helper</en>
         <de>Erweiterte Helfer</de>
@@ -23,11 +23,11 @@ GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper]]></de>
     <iconFilename>icon_advancedHelper.dds</iconFilename>
     <multiplayer supported="true"/>
     <extraSourceFiles>
-        <sourceFile filename="scripts/advancedHelperConfig.lua"/>
-        <sourceFile filename="scripts/advancedHelperMoneyType.lua"/>
-        <sourceFile filename="scripts/advancedHelperFinanceStats.lua"/>
-        <sourceFile filename="scripts/advancedHelperEvents.lua"/>
-        <sourceFile filename="scripts/advancedHelperAPI.lua"/>
+        <sourceFile filename="scripts/core/advancedHelperConfig.lua"/>
+        <sourceFile filename="scripts/lifecycle/advancedHelperMoneyType.lua"/>
+        <sourceFile filename="scripts/lifecycle/advancedHelperFinanceStats.lua"/>
+        <sourceFile filename="scripts/network/advancedHelperEvents.lua"/>
+        <sourceFile filename="scripts/api/advancedHelperAPI.lua"/>
         <sourceFile filename="scripts/advancedHelperMain.lua"/>
     </extraSourceFiles>
     <l10n filenamePrefix="translations/translation"/>
