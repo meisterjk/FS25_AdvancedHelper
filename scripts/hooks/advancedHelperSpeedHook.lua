@@ -11,12 +11,7 @@ function advancedHelperSpeedHook.motorSetSpeedLimit(self, superFunc, limit)
     if worker ~= nil and limit ~= math.huge and limit > 0 then
         local speedMult = worker:getSpeedMultiplier()
         if speedMult < 1.0 then
-            local newLimit = limit * speedMult
-            advancedHelperDebug.log(string.format(
-                "SPEED: %s motor %.1f->%.1fkm/h (-%.0f%%) [driving=%d]",
-                vehicle:getName(), limit, newLimit, (1 - speedMult) * 100, worker.driving
-            ))
-            limit = newLimit
+            limit = limit * speedMult
         end
     end
     superFunc(self, limit)
