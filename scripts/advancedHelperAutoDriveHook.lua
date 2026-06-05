@@ -171,8 +171,30 @@ function advancedHelperAutoDriveHook:onStartAutoDrive()
     if worker == nil then
         worker = advancedHelperManager:getWorkerForVehicle(vehicle)
     end
+    if worker == nil then
+        local farmId = vehicle:getOwnerFarmId()
+        if farmId == nil then
+            farmId = g_currentMission:getFarmId()
+        end
+        local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
+        if #freeWorkers > 0 then
+            worker = freeWorkers[1]
+            advancedHelperDebug.log(string.format("ADHOOK: fallback — assigning free worker %s to %s",
+                worker:getFullName(), vehicle:getName()))
+        end
+    end
 
     if worker ~= nil then
+        if worker.isAssigned and worker.assignedVehicle == vehicle then
+            advancedHelperDebug.log(string.format("ADHOOK: %s already assigned to %s — speed+hotspot only (handoff)",
+                worker:getFullName(), vehicle:getName()))
+            worker.assignSource = "AD"
+            advancedHelperSpeedHook.applySpeedModification(vehicle, worker)
+            advancedHelperHotspot:createHotspot(vehicle, worker, "AD")
+            advancedHelperSyncEvent.broadcast()
+            return
+        end
+
         if not worker.isAssigned then
             for _, w in ipairs(advancedHelperManager.hiredWorkers) do
                 if w.assignedVehicle == vehicle and w.id ~= worker.id then
