@@ -1,9 +1,103 @@
 advancedHelperWorker = {}
 advancedHelperWorker_mt = Class(advancedHelperWorker)
 
-advancedHelperWorker.NAMES_MALE = {"Hans","Peter","Klaus","Werner","Günther","Dieter","Helmut","Jürgen","Manfred","Rolf"}
-advancedHelperWorker.NAMES_FEMALE = {"Anna","Maria","Helga","Ingrid","Brigitte","Ursula","Karin","Renate","Monika","Petra"}
-advancedHelperWorker.NAMES_LAST_DE = {"Müller","Schmidt","Schneider","Fischer","Weber","Meyer","Wagner","Becker","Schulz","Hoffmann","Koch","Richter","Klein","Wolf","Schröder"}
+advancedHelperWorker.NAMES_MALE_DE = {
+    "Hans","Peter","Klaus","Werner","Günther","Dieter","Helmut","Jürgen","Manfred","Rolf",
+    "Thomas","Stefan","Andreas","Michael","Markus","Jörg","Uwe","Rüdiger","Frank","Volker",
+    "Heinz","Gerd","Wolfgang","Karl","Ernst","Otto","Friedrich","Heinrich","Wilhelm","Ludwig",
+    "Eberhard","Siegfried","Bernhard","Gerhard","Dietrich","Reinhard","Walther","Gottfried","Hartmut","Norbert",
+    "Bernd","Rainer","Karlheinz","Hansjörg","Dietmar","Alois","Benedikt","Georg","Konrad","Matthias"
+}
+advancedHelperWorker.NAMES_FEMALE_DE = {
+    "Anna","Maria","Helga","Ingrid","Brigitte","Ursula","Karin","Renate","Monika","Petra",
+    "Sabine","Claudia","Susanne","Barbara","Christa","Elke","Gisela","Hildegard","Margarethe","Rosa",
+    "Gertrud","Irmgard","Liselotte","Waltraud","Edeltraut","Annemarie","Elfriede","Ingeborg","Lieselotte","Bärbel",
+    "Heidrun","Marlene","Ulla","Sigi","Hannelore","Gudrun","Traudl","Irmela","Doris","Eva",
+    "Katharina","Mechthild","Adelheid","Hildegard","Josepha","Franziska","Antonia","Ludmilla","Brunhilde","Wilhelmine"
+}
+advancedHelperWorker.NAMES_LAST_DE = {
+    "Müller","Schmidt","Schneider","Fischer","Weber","Meyer","Wagner","Becker","Schulz","Hoffmann",
+    "Koch","Richter","Klein","Wolf","Schröder","Neumann","Schwarz","Zimmermann","Braun","Hartmann",
+    "Lange","Werner","Kratz","Lorenz","Funk","Walter","Graf","Frank","Schubert","Bauer",
+    "Krause","Schäfer","Bergmann","Simon","Keller","Herrmann","König","Walter","Lehmann","Maier",
+    "Huber","Pfeiffer","Lang","Stein","Weiß","Schafer","Dietrich","Herrman","Berger","Fuchs"
+}
+
+advancedHelperWorker.NAMES_MALE_EN = {
+    "James","Robert","John","Michael","David","William","Richard","Joseph","Thomas","Charles",
+    "Christopher","Daniel","Matthew","Anthony","Mark","Donald","Steven","Paul","Andrew","Joshua",
+    "Kenneth","Kevin","Brian","George","Timothy","Ronald","Edward","Jason","Jeffrey","Ryan",
+    "Jacob","Gary","Nicholas","Eric","Jonathan","Stephen","Larry","Justin","Scott","Benjamin",
+    "Brandon","Samuel","Raymond","Gregory","Frank","Alexander","Patrick","Jack","Dennis","Henry"
+}
+advancedHelperWorker.NAMES_FEMALE_EN = {
+    "Mary","Patricia","Jennifer","Linda","Barbara","Elizabeth","Susan","Jessica","Sarah","Karen",
+    "Lisa","Nancy","Betty","Margaret","Sandra","Ashley","Dorothy","Kimberly","Emily","Donna",
+    "Michelle","Carol","Amanda","Melissa","Deborah","Stephanie","Rebecca","Sharon","Laura","Cynthia",
+    "Kathleen","Amy","Angela","Shirley","Anna","Brenda","Pamela","Emma","Nicole","Helen",
+    "Samantha","Katherine","Christine","Debra","Rachel","Carolyn","Janet","Catherine","Maria","Heather"
+}
+advancedHelperWorker.NAMES_LAST_EN = {
+    "Smith","Johnson","Williams","Brown","Jones","Davies","Evans","Wilson","Thomas","Roberts",
+    "Thompson","Walker","White","Wright","Robinson","Hall","Green","Harris","Cooper","King",
+    "Lee","Martin","Clarke","James","Morgan","Hughes","Edwards","Hill","Moore","Clark",
+    "Harrison","Scott","Young","Morris","Ward","Watson","Brooks","Wood","Bennett","Gray",
+    "Price","Griffiths","Carter","Mitchell","Turner","Phillips","Campbell","Parker","Evans","Baker"
+}
+
+advancedHelperWorker.NAMES_MALE_US = {
+    "James","Robert","John","Michael","David","William","Richard","Joseph","Thomas","Charles",
+    "Christopher","Daniel","Matthew","Anthony","Mark","Steven","Paul","Andrew","Joshua","Kenneth",
+    "Brian","Kevin","Jason","Timothy","Jeffrey","Ryan","Gary","Nicholas","Eric","Jacob",
+    "Frank","Scott","Justin","Brandon","Benjamin","Samuel","Raymond","Gregory","Alexander","Patrick",
+    "Jack","Dennis","Henry","Peter","Larry","Albert","Jonathan","Philip","Douglas","Eugene"
+}
+advancedHelperWorker.NAMES_FEMALE_US = {
+    "Mary","Patricia","Jennifer","Linda","Barbara","Elizabeth","Susan","Jessica","Sarah","Karen",
+    "Lisa","Nancy","Betty","Margaret","Sandra","Ashley","Dorothy","Kimberly","Emily","Donna",
+    "Michelle","Carol","Amanda","Melissa","Deborah","Stephanie","Rebecca","Sharon","Laura","Cynthia",
+    "Kathleen","Amy","Angela","Shirley","Anna","Brenda","Pamela","Emma","Nicole","Helen",
+    "Samantha","Katherine","Christine","Debra","Rachel","Carolyn","Janet","Catherine","Maria","Heather"
+}
+advancedHelperWorker.NAMES_LAST_US = {
+    "Smith","Johnson","Williams","Brown","Jones","Garcia","Miller","Davis","Rodriguez","Martinez",
+    "Hernandez","Lopez","Gonzalez","Wilson","Anderson","Thomas","Taylor","Moore","Jackson","Martin",
+    "Lee","Perez","Thompson","White","Harris","Sanchez","Clark","Ramirez","Lewis","Robinson",
+    "Walker","Young","Allen","King","Wright","Scott","Torres","Nguyen","Hill","Flores",
+    "Green","Adams","Nelson","Baker","Hall","Rivera","Campbell","Mitchell","Carter","Roberts"
+}
+
+advancedHelperWorker.LANGUAGE_POOLS = {
+    de = { male = "NAMES_MALE_DE", female = "NAMES_FEMALE_DE", last = "NAMES_LAST_DE" },
+    en = { male = "NAMES_MALE_EN", female = "NAMES_FEMALE_EN", last = "NAMES_LAST_EN" },
+    us = { male = "NAMES_MALE_US", female = "NAMES_FEMALE_US", last = "NAMES_LAST_US" },
+}
+
+advancedHelperWorker.LANGUAGE_SUFFIX_MAP = {
+    _de = "de",
+    _en = "en",
+    _us = "us",
+    _gb = "en",
+    _fr = "en",
+    _it = "en",
+    _es = "en",
+    _pl = "en",
+    _ru = "en",
+    _cz = "en",
+    _jp = "en",
+    _kr = "en",
+    _br = "en",
+    _pt = "en",
+    _hu = "en",
+    _tr = "en",
+    _nl = "en",
+    _dk = "en",
+    _se = "en",
+    _no = "en",
+    _fi = "en",
+    _at = "de",
+    _ch = "de",
+}
 
 advancedHelperWorker.ATTR_MIN = 1
 advancedHelperWorker.ATTR_MAX = 10
@@ -42,16 +136,63 @@ function advancedHelperWorker._nextId()
     return advancedHelperWorker._idCounter
 end
 
-function advancedHelperWorker.generateRandom()
-    local w = advancedHelperWorker.new()
-    local isMale = math.random() > 0.5
-    w.gender = isMale and "M" or "F"
-    if isMale then
-        w.firstName = advancedHelperWorker.NAMES_MALE[math.random(#advancedHelperWorker.NAMES_MALE)]
-    else
-        w.firstName = advancedHelperWorker.NAMES_FEMALE[math.random(#advancedHelperWorker.NAMES_FEMALE)]
+function advancedHelperWorker.getCurrentLanguageCode()
+    if g_languageSuffix ~= nil then
+        local code = advancedHelperWorker.LANGUAGE_SUFFIX_MAP[g_languageSuffix]
+        if code ~= nil then
+            return code
+        end
+        local stripped = g_languageSuffix:gsub("^_", "")
+        if advancedHelperWorker.LANGUAGE_POOLS[stripped] ~= nil then
+            return stripped
+        end
     end
-    w.lastName = advancedHelperWorker.NAMES_LAST_DE[math.random(#advancedHelperWorker.NAMES_LAST_DE)]
+    return "en"
+end
+
+function advancedHelperWorker.getNamePool(langCode)
+    local pool = advancedHelperWorker.LANGUAGE_POOLS[langCode]
+    if pool == nil then
+        pool = advancedHelperWorker.LANGUAGE_POOLS["en"]
+    end
+    return pool
+end
+
+function advancedHelperWorker.generateRandom(excludeNames)
+    local langCode = advancedHelperWorker.getCurrentLanguageCode()
+    local pool = advancedHelperWorker.getNamePool(langCode)
+
+    local maleNames = advancedHelperWorker[pool.male]
+    local femaleNames = advancedHelperWorker[pool.female]
+    local lastNames = advancedHelperWorker[pool.last]
+
+    local maxAttempts = 50
+    for _ = 1, maxAttempts do
+        local w = advancedHelperWorker.new()
+        local isMale = math.random() > 0.5
+        w.gender = isMale and "M" or "F"
+
+        if isMale then
+            w.firstName = maleNames[math.random(#maleNames)]
+        else
+            w.firstName = femaleNames[math.random(#femaleNames)]
+        end
+        w.lastName = lastNames[math.random(#lastNames)]
+
+        w.efficiency = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)
+        w.driving = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)
+        w.skill = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)
+        w.monthlySalary = advancedHelperWorker.calculateSalary(w.efficiency, w.driving, w.skill)
+
+        if excludeNames == nil or excludeNames[w:getFullName()] == nil then
+            return w
+        end
+    end
+
+    local w = advancedHelperWorker.new()
+    w.gender = "M"
+    w.firstName = maleNames[math.random(#maleNames)]
+    w.lastName = lastNames[math.random(#lastNames)]
     w.efficiency = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)
     w.driving = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)
     w.skill = math.random(advancedHelperWorker.ATTR_MIN, advancedHelperWorker.ATTR_MAX)

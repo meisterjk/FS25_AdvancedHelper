@@ -9,6 +9,13 @@ function advancedHelperHelperSafeguard.install()
     AIJob.getPricePerMs = Utils.overwrittenFunction(AIJob.getPricePerMs, advancedHelperHelperSafeguard.getPricePerMs)
     AIJobFieldWork.getPricePerMs = Utils.overwrittenFunction(AIJobFieldWork.getPricePerMs, advancedHelperHelperSafeguard.getPricePerMs)
     AIJobConveyor.getPricePerMs = Utils.overwrittenFunction(AIJobConveyor.getPricePerMs, advancedHelperHelperSafeguard.getPricePerMs)
+
+    local jobClasses = { AIJobFieldWork, AIJobGoTo, AIJobDeliver, AIJobLoadAndDeliver, AIJobConveyor }
+    for _, jobClass in ipairs(jobClasses) do
+        if jobClass ~= nil and jobClass.getIsStartable ~= nil then
+            jobClass.getIsStartable = Utils.overwrittenFunction(jobClass.getIsStartable, advancedHelperHelperSafeguard.getIsStartable)
+        end
+    end
 end
 
 function advancedHelperHelperSafeguard.getRandomHelper(self, superFunc)
@@ -51,6 +58,24 @@ function advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(vehicle)
         return false
     end
     return #advancedHelperManager:getFreeWorkersForFarm(farmId) > 0
+end
+
+function advancedHelperHelperSafeguard.getIsStartable(self, superFunc, connection)
+    if #advancedHelperManager.hiredWorkers > 0 then
+        local vehicle = advancedHelperHelperSafeguard.getVehicleFromJob(self)
+        if vehicle ~= nil then
+            local farmId = vehicle:getOwnerFarmId()
+            if farmId ~= nil then
+                local freeWorkers = advancedHelperManager:getFreeWorkersForFarm(farmId)
+                if #freeWorkers == 0 then
+                    advancedHelperDebug.log(string.format("getIsStartable: BLOCKED (no free workers for farm %d) vehicle=%s",
+                        farmId, vehicle:getName()))
+                    return false, AIJobFieldWork.START_ERROR_LIMIT_REACHED
+                end
+            end
+        end
+    end
+    return superFunc(self, connection)
 end
 
 function advancedHelperHelperSafeguard.getCanStartAIVehicle(self, superFunc, ...)

@@ -278,11 +278,25 @@ function advancedHelperManager:getTotalMonthlyCosts(farmId)
     return total
 end
 
+function advancedHelperManager:getUsedNames()
+    local names = {}
+    for _, w in ipairs(self.hiredWorkers) do
+        names[w:getFullName()] = true
+    end
+    for _, a in ipairs(self.applicants) do
+        names[a:getFullName()] = true
+    end
+    return names
+end
+
 function advancedHelperManager:generateApplicants()
     self.applicants = {}
+    local usedNames = self:getUsedNames()
     local count = math.random(3, advancedHelperManager.MAX_APPLICANTS)
     for _ = 1, count do
-        table.insert(self.applicants, advancedHelperWorker.generateRandom())
+        local worker = advancedHelperWorker.generateRandom(usedNames)
+        table.insert(self.applicants, worker)
+        usedNames[worker:getFullName()] = true
     end
 end
 

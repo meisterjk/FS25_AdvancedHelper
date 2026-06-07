@@ -21,5 +21,5 @@ advancedHelperConfig = {
     -- false = CP laeuft unabhaengig, nur CP-Counter fuer maxNumHirables
     INFILTRATE_COURSEPLAY = true,
 
-    DEBUG = true,
+    DEBUG = false,
 }
