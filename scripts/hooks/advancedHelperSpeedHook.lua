@@ -123,6 +123,28 @@ function advancedHelperSpeedHook.onAIJobStopped(job, aiMessage)
     end
 
     local vehicle = advancedHelperHelperSafeguard.getVehicleFromJob(job)
+
+    if vehicle == nil then
+        if job.helperIndex ~= nil then
+            local worker = advancedHelperManager:getWorkerByHelperIndex(job.helperIndex)
+            if worker ~= nil and worker.isAssigned then
+                vehicle = worker.assignedVehicle
+                if vehicle ~= nil then
+                    advancedHelperDebug.log(string.format("AI_JOB_STOPPED: recovered vehicle %s via worker %s helperIndex",
+                        vehicle:getName(), worker:getFullName()))
+                else
+                    advancedHelperDebug.log(string.format("AI_JOB_STOPPED: unassigning worker %s (no vehicle reference, helperIndex=%d)",
+                        worker:getFullName(), job.helperIndex or -1))
+                    worker.isAssigned = false
+                    worker.assignedVehicle = nil
+                    worker.assignSource = ""
+                    advancedHelperSyncEvent.broadcast()
+                    return
+                end
+            end
+        end
+    end
+
     if vehicle == nil then
         return
     end
