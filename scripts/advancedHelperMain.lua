@@ -75,21 +75,6 @@ function advancedHelper:update(dt)
     advancedHelperAutoDriveHook.processDeferredStops()
     advancedHelperSpeedHook.processDeferredStops()
 
-    if g_server ~= nil and g_currentMission ~= nil then
-        local target = #advancedHelperManager.hiredWorkers
-        if not advancedHelperConfig.INFILTRATE_AUTODRIVE then
-            local adExtra = advancedHelperAutoDriveHook.activeADCount or 0
-            target = target + adExtra
-        end
-        if not advancedHelperConfig.INFILTRATE_COURSEPLAY then
-            local cpExtra = advancedHelperCourseplayHook.activeCPCount or 0
-            target = target + cpExtra
-        end
-        if g_currentMission.maxNumHirables ~= target then
-            g_currentMission.maxNumHirables = target
-        end
-    end
-
     advancedHelperPayroll.update(dt)
     advancedHelper.cancelOrphanedAIJobs()
 end

@@ -5,6 +5,7 @@ function advancedHelperHelperSafeguard.install()
     HelperManager.getRandomHelperStyle = Utils.overwrittenFunction(HelperManager.getRandomHelperStyle, advancedHelperHelperSafeguard.getRandomHelperStyle)
     AIJobVehicle.getCanStartAIVehicle = Utils.overwrittenFunction(AIJobVehicle.getCanStartAIVehicle, advancedHelperHelperSafeguard.getCanStartAIVehicle)
     AIJobVehicle.getShowAIToggleActionEvent = Utils.overwrittenFunction(AIJobVehicle.getShowAIToggleActionEvent, advancedHelperHelperSafeguard.getShowAIToggleActionEvent)
+    AISystem.getAILimitedReached = Utils.overwrittenFunction(AISystem.getAILimitedReached, advancedHelperHelperSafeguard.getAILimitedReached)
     AIJob.start = Utils.overwrittenFunction(AIJob.start, advancedHelperHelperSafeguard.aiJobStart)
     AIJob.getPricePerMs = Utils.overwrittenFunction(AIJob.getPricePerMs, advancedHelperHelperSafeguard.getPricePerMs)
     AIJobFieldWork.getPricePerMs = Utils.overwrittenFunction(AIJobFieldWork.getPricePerMs, advancedHelperHelperSafeguard.getPricePerMs)
@@ -84,6 +85,13 @@ end
 
 function advancedHelperHelperSafeguard.getShowAIToggleActionEvent(self, superFunc, ...)
     return superFunc(self, ...)
+end
+
+function advancedHelperHelperSafeguard.getAILimitedReached(self, superFunc)
+    if #advancedHelperManager.hiredWorkers > 0 then
+        return false
+    end
+    return superFunc(self)
 end
 
 function advancedHelperHelperSafeguard.getVehicleFromJob(job)

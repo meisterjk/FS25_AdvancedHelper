@@ -89,7 +89,6 @@ function advancedHelperManager:loadFromSavegame()
     if self:isServer() then
         self:removeBaseHelpers()
         self:reAddWorkerHelpers()
-        self:updateMaxHirables()
         if #self.applicants == 0 then
             self:generateApplicants()
         end
@@ -114,7 +113,6 @@ function advancedHelperManager:init()
         else
             self:generateApplicants()
         end
-        self:updateMaxHirables()
     else
         self:removeBaseHelpers()
     end
@@ -241,13 +239,6 @@ function advancedHelperManager:reAddWorkerHelpers()
     g_helperManager.numHelpers = #self.hiredWorkers
 end
 
-function advancedHelperManager:updateMaxHirables()
-    if g_currentMission == nil then
-        return
-    end
-    g_currentMission.maxNumHirables = #self.hiredWorkers
-end
-
 function advancedHelperManager:getWorkersForFarm(farmId)
     local result = {}
     for _, w in ipairs(self.hiredWorkers) do
@@ -341,7 +332,6 @@ function advancedHelperManager:hireApplicant(applicantId, farmId)
         table.insert(self.hiredWorkers, applicant)
         table.remove(self.applicants, appIndex)
         g_currentMission:addMoney(-applicant.monthlySalary, applicant.farmId, MoneyType.WORKER_SALARY, true, true)
-        self:updateMaxHirables()
         self:saveState()
         advancedHelperSyncEvent.broadcast()
         advancedHelperAPI._fire("workerHired", advancedHelperAPI._copyWorker(applicant))
@@ -408,7 +398,6 @@ function advancedHelperManager:fireWorker(workerId, farmId)
     table.remove(self.hiredWorkers, wIndex)
     g_helperManager.numHelpers = #self.hiredWorkers
 
-    self:updateMaxHirables()
     self:saveState()
     advancedHelperSyncEvent.broadcast()
     advancedHelperAPI._fire("workerFired", advancedHelperAPI._copyWorker(worker))
