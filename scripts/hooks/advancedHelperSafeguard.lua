@@ -79,14 +79,7 @@ function advancedHelperHelperSafeguard.getIsStartable(self, superFunc, connectio
 end
 
 function advancedHelperHelperSafeguard.getCanStartAIVehicle(self, superFunc, ...)
-    local hasWorkers = advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(self)
-    if not hasWorkers then
-        advancedHelperDebug.log(string.format("getCanStartAIVehicle: BLOCKED (no free workers) vehicle=%s", self:getName()))
-        return false
-    end
-    local result = superFunc(self, ...)
-    advancedHelperDebug.log(string.format("getCanStartAIVehicle: %s (hasFreeWorkers=true) vehicle=%s", tostring(result), self:getName()))
-    return result
+    return superFunc(self, ...)
 end
 
 function advancedHelperHelperSafeguard.getShowAIToggleActionEvent(self, superFunc, ...)
