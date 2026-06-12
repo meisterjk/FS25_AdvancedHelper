@@ -90,10 +90,6 @@ function advancedHelperHelperSafeguard.getCanStartAIVehicle(self, superFunc, ...
 end
 
 function advancedHelperHelperSafeguard.getShowAIToggleActionEvent(self, superFunc, ...)
-    local hasWorkers = advancedHelperHelperSafeguard.hasFreeWorkersForVehicle(self)
-    if not hasWorkers then
-        return false
-    end
     return superFunc(self, ...)
 end
 
