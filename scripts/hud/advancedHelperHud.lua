@@ -154,18 +154,15 @@ function advancedHelperHud:init()
 
     for i = 1, advancedHelperHud.maxRowOverlays do
         if g_overlayManager ~= nil then
-            local fuelId = useSprites and "advancedHelperIcon.fuelIcon" or "gui.icon_fuel"
-            local fuelOv = g_overlayManager:createOverlay(fuelId, 0, 0, attrIconW, attrIconH)
+            local fuelOv = g_overlayManager:createOverlay("gui.icon_fuel", 0, 0, attrIconW, attrIconH)
             fuelOv:setColor(1, 0.85, 0.2, 0.9)
             advancedHelperHud.iconFuelOverlays[i] = fuelOv
 
-            local speedId = useSprites and "advancedHelperIcon.wheelIcon" or "gui.icon_tempomat"
-            local speedOv = g_overlayManager:createOverlay(speedId, 0, 0, attrIconW, attrIconH)
+            local speedOv = g_overlayManager:createOverlay("gui.icon_tempomat", 0, 0, attrIconW, attrIconH)
             speedOv:setColor(0.3, 0.75, 1.0, 0.9)
             advancedHelperHud.iconSpeedOverlays[i] = speedOv
 
-            local repairId = useSprites and "advancedHelperIcon.wrenchIcon" or "gui.icon_repair"
-            local repairOv = g_overlayManager:createOverlay(repairId, 0, 0, attrIconW, attrIconH)
+            local repairOv = g_overlayManager:createOverlay("gui.icon_repair", 0, 0, attrIconW, attrIconH)
             repairOv:setColor(0.9, 0.5, 0.1, 0.9)
             advancedHelperHud.iconRepairOverlays[i] = repairOv
         else
@@ -260,10 +257,6 @@ function advancedHelperHud:draw()
     advancedHelperHud:init()
     if not advancedHelperHud.isInitialized then
         return
-    end
-
-    if g_inputBinding ~= nil then
-        advancedHelperHud.mouseX, advancedHelperHud.mouseY = g_inputBinding:getMousePosition()
     end
 
     local vehicle = advancedHelperHud.getCurrentVehicle()
@@ -468,6 +461,8 @@ function advancedHelperHud:draw()
 end
 
 function advancedHelperHud:mouseEvent(posX, posY, isDown, isUp, button)
+    advancedHelperHud.mouseX = posX
+    advancedHelperHud.mouseY = posY
     if not advancedHelperHud.isVisible then
         return false
     end
