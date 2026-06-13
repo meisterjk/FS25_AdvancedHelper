@@ -15,6 +15,10 @@ Hotkeys: Ctrl+H - Toggle HUD | Middle Mouse Button - Toggle cursor | InGame Menu
 GitHub link: https://github.com/meisterjk/FS25_AdvancedHelper
 
 Changelog:
+v1.3.0.5:
+- Updated mod icon texture
+- Added changelog to mod description
+
 v1.3.0.4:
 - Fixed steering mode and AI settings being blocked when all workers are busy
 - Workers are now properly released when an AI job ends or is cancelled
@@ -43,6 +47,10 @@ Tastenkombinationen: Strg+H - HUD ein/aus | Mittlere Maustaste - Cursor ein/aus 
 GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper
 
 Changelog:
+v1.3.0.5:
+- Mod-Icon-Textur aktualisiert
+- Changelog zur Mod-Beschreibung hinzugefügt
+
 v1.3.0.4:
 - Lenkmodus und KI-Einstellungen werden nicht mehr blockiert wenn alle Arbeiter beschäftigt sind
 - Arbeiter werden nun korrekt freigegeben wenn ein KI-Job beendet oder abgebrochen wird
