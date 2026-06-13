@@ -24,6 +24,7 @@ advancedHelperHud.COLOR_PLAY = {0.1, 0.7, 0.1, 0.95}
 advancedHelperHud.COLOR_STOP = {0.85, 0.15, 0.15, 0.95}
 advancedHelperHud.COLOR_CLOSE = {0.85, 0.2, 0.2, 0.9}
 advancedHelperHud.COLOR_DISABLED = {0.3, 0.3, 0.3, 0.5}
+advancedHelperHud.COLOR_HOVER = {0.4, 0.7, 1.0, 0.95}
 advancedHelperHud.STATUS_ACTIVE = {0.95, 0.75, 0.0, 0.9}
 advancedHelperHud.STATUS_FREE = {0.4, 0.8, 0.4, 0.9}
 
@@ -52,6 +53,8 @@ advancedHelperHud.iconSpeedOverlays = {}
 advancedHelperHud.iconRepairOverlays = {}
 advancedHelperHud._drawLogged = false
 advancedHelperHud._mouseLogged = false
+advancedHelperHud.mouseX = nil
+advancedHelperHud.mouseY = nil
 
 advancedHelperHud.isDragging = false
 advancedHelperHud.dragOffsetX = 0
@@ -81,16 +84,30 @@ function advancedHelperHud:init()
         advancedHelperHud.x, advancedHelperHud.y = getNormalizedScreenValues(advancedHelperHud.POS_X, advancedHelperHud.POS_Y)
     end
 
-    advancedHelperHud.bgOverlay = Overlay.new(texture, 0, 0, 0, 0)
-    advancedHelperHud.bgOverlay:setUVs(uvs)
+    local useSprites = g_overlayManager ~= nil and advancedHelperHud.spriteRegistered
+
+    if useSprites then
+        advancedHelperHud.bgOverlay = g_overlayManager:createOverlay("advancedHelperIcon.panel", 0, 0, 0, 0)
+    else
+        advancedHelperHud.bgOverlay = Overlay.new(texture, 0, 0, 0, 0)
+        advancedHelperHud.bgOverlay:setUVs(uvs)
+    end
     advancedHelperHud.bgOverlay:setColor(unpack(advancedHelperHud.BG_COLOR))
 
-    advancedHelperHud.headerOverlay = Overlay.new(texture, 0, 0, 0, 0)
-    advancedHelperHud.headerOverlay:setUVs(uvs)
+    if useSprites then
+        advancedHelperHud.headerOverlay = g_overlayManager:createOverlay("advancedHelperIcon.titleBar", 0, 0, 0, 0)
+    else
+        advancedHelperHud.headerOverlay = Overlay.new(texture, 0, 0, 0, 0)
+        advancedHelperHud.headerOverlay:setUVs(uvs)
+    end
     advancedHelperHud.headerOverlay:setColor(unpack(advancedHelperHud.HEADER_COLOR))
 
-    advancedHelperHud.footerOverlay = Overlay.new(texture, 0, 0, 0, 0)
-    advancedHelperHud.footerOverlay:setUVs(uvs)
+    if useSprites then
+        advancedHelperHud.footerOverlay = g_overlayManager:createOverlay("advancedHelperIcon.bottomBar", 0, 0, 0, 0)
+    else
+        advancedHelperHud.footerOverlay = Overlay.new(texture, 0, 0, 0, 0)
+        advancedHelperHud.footerOverlay:setUVs(uvs)
+    end
     advancedHelperHud.footerOverlay:setColor(unpack(advancedHelperHud.BG_COLOR))
 
     for i = 1, advancedHelperHud.maxRowOverlays do
@@ -102,8 +119,6 @@ function advancedHelperHud:init()
 
     local btnW, btnH = getNormalizedScreenValues(advancedHelperHud.BUTTON_SIZE_PX, advancedHelperHud.BUTTON_SIZE_PX)
     local closeW, closeH = getNormalizedScreenValues(advancedHelperHud.CLOSE_SIZE_PX, advancedHelperHud.CLOSE_SIZE_PX)
-
-    local useSprites = g_overlayManager ~= nil and advancedHelperHud.spriteRegistered
 
     for i = 1, advancedHelperHud.maxRowOverlays do
         local playOv
@@ -139,15 +154,18 @@ function advancedHelperHud:init()
 
     for i = 1, advancedHelperHud.maxRowOverlays do
         if g_overlayManager ~= nil then
-            local fuelOv = g_overlayManager:createOverlay("gui.icon_fuel", 0, 0, attrIconW, attrIconH)
+            local fuelId = useSprites and "advancedHelperIcon.fuelIcon" or "gui.icon_fuel"
+            local fuelOv = g_overlayManager:createOverlay(fuelId, 0, 0, attrIconW, attrIconH)
             fuelOv:setColor(1, 0.85, 0.2, 0.9)
             advancedHelperHud.iconFuelOverlays[i] = fuelOv
 
-            local speedOv = g_overlayManager:createOverlay("gui.icon_tempomat", 0, 0, attrIconW, attrIconH)
+            local speedId = useSprites and "advancedHelperIcon.wheelIcon" or "gui.icon_tempomat"
+            local speedOv = g_overlayManager:createOverlay(speedId, 0, 0, attrIconW, attrIconH)
             speedOv:setColor(0.3, 0.75, 1.0, 0.9)
             advancedHelperHud.iconSpeedOverlays[i] = speedOv
 
-            local repairOv = g_overlayManager:createOverlay("gui.icon_repair", 0, 0, attrIconW, attrIconH)
+            local repairId = useSprites and "advancedHelperIcon.wrenchIcon" or "gui.icon_repair"
+            local repairOv = g_overlayManager:createOverlay(repairId, 0, 0, attrIconW, attrIconH)
             repairOv:setColor(0.9, 0.5, 0.1, 0.9)
             advancedHelperHud.iconRepairOverlays[i] = repairOv
         else
@@ -244,6 +262,10 @@ function advancedHelperHud:draw()
         return
     end
 
+    if g_inputBinding ~= nil then
+        advancedHelperHud.mouseX, advancedHelperHud.mouseY = g_inputBinding:getMousePosition()
+    end
+
     local vehicle = advancedHelperHud.getCurrentVehicle()
 
     local playerFarmId = g_currentMission:getFarmId()
@@ -292,7 +314,14 @@ function advancedHelperHud:draw()
     local closeBtnY = y + totalH - hH + (hH - closeSzH) * 0.5
     advancedHelperHud.closeOverlay:setPosition(closeBtnX, closeBtnY)
     advancedHelperHud.closeOverlay:setDimension(closeSzW, closeSzH)
-    advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
+    local closeHovered = advancedHelperHud.mouseX ~= nil
+        and closeBtnX <= advancedHelperHud.mouseX and advancedHelperHud.mouseX <= closeBtnX + closeSzW
+        and closeBtnY <= advancedHelperHud.mouseY and advancedHelperHud.mouseY <= closeBtnY + closeSzH
+    if closeHovered then
+        advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_HOVER))
+    else
+        advancedHelperHud.closeOverlay:setColor(unpack(advancedHelperHud.COLOR_CLOSE))
+    end
     advancedHelperHud.closeOverlay:render()
     table.insert(advancedHelperHud.buttonRows, {
         type = "close", x = closeBtnX, y = closeBtnY,
@@ -367,20 +396,30 @@ function advancedHelperHud:draw()
         end
 
         local btnX = x + w - m - btnSzW
+        local btnY = rowY + (lH - btnSzH) * 0.5
 
         if i <= advancedHelperHud.maxRowOverlays then
+            local btnHovered = advancedHelperHud.mouseX ~= nil
+                and btnX <= advancedHelperHud.mouseX and advancedHelperHud.mouseX <= btnX + btnSzW
+                and btnY <= advancedHelperHud.mouseY and advancedHelperHud.mouseY <= btnY + btnSzH
             if worker.isAssigned then
                 local stopOv = advancedHelperHud.stopOverlays[i]
-                stopOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
+                stopOv:setPosition(btnX, btnY)
                 stopOv:setDimension(btnSzW, btnSzH)
-                stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
+                if btnHovered then
+                    stopOv:setColor(unpack(advancedHelperHud.COLOR_HOVER))
+                else
+                    stopOv:setColor(unpack(advancedHelperHud.COLOR_STOP))
+                end
                 stopOv:render()
             else
                 local canStart = vehicle ~= nil and vehicle:getCanStartAIVehicle()
                 local playOv = advancedHelperHud.playOverlays[i]
-                playOv:setPosition(btnX, rowY + (lH - btnSzH) * 0.5)
+                playOv:setPosition(btnX, btnY)
                 playOv:setDimension(btnSzW, btnSzH)
-                if canStart then
+                if btnHovered then
+                    playOv:setColor(unpack(advancedHelperHud.COLOR_HOVER))
+                elseif canStart then
                     playOv:setColor(unpack(advancedHelperHud.COLOR_PLAY))
                 else
                     playOv:setColor(unpack(advancedHelperHud.COLOR_DISABLED))
@@ -388,8 +427,6 @@ function advancedHelperHud:draw()
                 playOv:render()
             end
         end
-
-        local btnY = rowY + (lH - btnSzH) * 0.5
 
         if worker.isAssigned then
             table.insert(advancedHelperHud.buttonRows, {

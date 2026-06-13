@@ -1,11 +1,21 @@
 <texture>
     <meta>
-        <filename>iconSprite.dds</filename>
-        <size width="128" height="32" />
+        <filename>advancedHelperAtlas.dds</filename>
+        <size width="256" height="256" />
     </meta>
     <slices>
-        <slice id="play" uvs="2px 2px 28px 28px"/>
-        <slice id="stop" uvs="34px 2px 28px 28px"/>
-        <slice id="close" uvs="66px 2px 28px 28px"/>
+        <slice id="panel" uvs="0px 0px 256px 32px"/>
+        <slice id="play" uvs="2px 34px 28px 28px"/>
+        <slice id="stop" uvs="34px 34px 28px 28px"/>
+        <slice id="close" uvs="66px 34px 28px 28px"/>
+        <slice id="pause" uvs="98px 34px 28px 28px"/>
+        <slice id="config" uvs="130px 34px 28px 28px"/>
+        <slice id="fuelIcon" uvs="2px 64px 14px 14px"/>
+        <slice id="wrenchIcon" uvs="18px 64px 14px 14px"/>
+        <slice id="wheelIcon" uvs="34px 64px 14px 14px"/>
+        <slice id="titleBar" uvs="0px 80px 256px 20px"/>
+        <slice id="bottomBar" uvs="0px 102px 256px 16px"/>
+        <slice id="prev" uvs="2px 120px 20px 20px"/>
+        <slice id="next" uvs="26px 120px 20px 20px"/>
     </slices>
 </texture>
