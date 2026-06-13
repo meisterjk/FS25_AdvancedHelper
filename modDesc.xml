@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <modDesc descVersion="109">
     <author>mj</author>
-    <version>1.3.0.5</version>
+    <version>1.3.0.6</version>
     <title>
         <en>Advanced Helper</en>
         <de>Erweiterte Helfer</de>
@@ -15,6 +15,10 @@ Hotkeys: Ctrl+H - Toggle HUD | Middle Mouse Button - Toggle cursor | InGame Menu
 GitHub link: https://github.com/meisterjk/FS25_AdvancedHelper
 
 Changelog:
+v1.3.0.6:
+- Fixed HUD Play button not starting AI helper — worker assignment and job start now work correctly together
+- Workers no longer shown as busy when using HUD to start a helper
+
 v1.3.0.5:
 - Updated mod icon texture
 - Added changelog to mod description
@@ -47,6 +51,10 @@ Tastenkombinationen: Strg+H - HUD ein/aus | Mittlere Maustaste - Cursor ein/aus 
 GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper
 
 Changelog:
+v1.3.0.6:
+- HUD Play-Button startet jetzt zuverlässig KI-Helfer — Arbeiterzuweisung und Job-Start greifen korrekt ineinander
+- Arbeiter werden nicht mehr als beschäftigt angezeigt wenn der HUD-Button zum Starten verwendet wird
+
 v1.3.0.5:
 - Mod-Icon-Textur aktualisiert
 - Changelog zur Mod-Beschreibung hinzugefügt
