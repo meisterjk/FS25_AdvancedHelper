@@ -150,13 +150,16 @@ function advancedHelperStartAIEvent:run(connection)
     if g_server ~= nil then
         local vehicle = NetworkUtil.getObject(self.vehicleId)
         if vehicle ~= nil then
-            advancedHelperManager:assignWorkerToVehicle(self.workerId, vehicle)
             local startableJob = vehicle:getStartableAIJob()
             if startableJob ~= nil then
-                startableJob:applyCurrentState(vehicle, g_currentMission, self.farmId, true)
-                g_currentMission.aiSystem:startJob(startableJob, self.farmId)
-            else
-                advancedHelperManager:unassignWorker(self.workerId)
+                local worker = advancedHelperManager:getWorkerById(self.workerId)
+                if worker ~= nil and not worker.isAssigned then
+                    startableJob:applyCurrentState(vehicle, g_currentMission, self.farmId, true)
+                    if worker.helperIndex ~= nil then
+                        startableJob.helperIndex = worker.helperIndex
+                    end
+                    g_currentMission.aiSystem:startJob(startableJob, self.farmId)
+                end
             end
         end
     end

@@ -405,6 +405,18 @@ function advancedHelperManager:fireWorker(workerId, farmId)
     return true
 end
 
+function advancedHelperManager:getWorkerById(workerId)
+    if workerId == nil then
+        return nil
+    end
+    for _, w in ipairs(self.hiredWorkers) do
+        if w.id == workerId then
+            return w
+        end
+    end
+    return nil
+end
+
 function advancedHelperManager:getWorkerByHelperIndex(helperIndex)
     if helperIndex == nil then
         return nil
