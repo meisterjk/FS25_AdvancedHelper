@@ -121,11 +121,15 @@ function advancedHelperHelperSafeguard.aiJobStart(self, superFunc, farmId)
         return
     end
 
+    local intendedHelperIndex = self.helperIndex
     local result = superFunc(self, farmId)
 
     local vehicle = advancedHelperHelperSafeguard.getVehicleFromJob(self)
     if vehicle ~= nil then
         local worker = advancedHelperManager:getWorkerForVehicle(vehicle)
+        if worker == nil and intendedHelperIndex ~= nil then
+            worker = advancedHelperManager:getWorkerByHelperIndex(intendedHelperIndex)
+        end
         if worker == nil then
             worker = advancedHelperManager:getWorkerByHelperIndex(self.helperIndex)
         end
