@@ -1,21 +1,21 @@
 <texture>
     <meta>
         <filename>advancedHelperAtlas.dds</filename>
-        <size width="256" height="256" />
+        <size width="512" height="512" />
     </meta>
     <slices>
-        <slice id="panel" uvs="0px 0px 256px 32px"/>
-        <slice id="play" uvs="2px 34px 28px 28px"/>
-        <slice id="stop" uvs="34px 34px 28px 28px"/>
-        <slice id="close" uvs="66px 34px 28px 28px"/>
-        <slice id="pause" uvs="98px 34px 28px 28px"/>
-        <slice id="config" uvs="130px 34px 28px 28px"/>
-        <slice id="fuelIcon" uvs="2px 64px 14px 14px"/>
-        <slice id="wrenchIcon" uvs="18px 64px 14px 14px"/>
-        <slice id="wheelIcon" uvs="34px 64px 14px 14px"/>
-        <slice id="titleBar" uvs="0px 80px 256px 20px"/>
-        <slice id="bottomBar" uvs="0px 102px 256px 16px"/>
-        <slice id="prev" uvs="2px 120px 20px 20px"/>
-        <slice id="next" uvs="26px 120px 20px 20px"/>
+        <slice id="panel" uvs="0px 0px 512px 64px"/>
+        <slice id="play" uvs="4px 68px 56px 56px"/>
+        <slice id="stop" uvs="68px 68px 56px 56px"/>
+        <slice id="close" uvs="132px 68px 56px 56px"/>
+        <slice id="pause" uvs="196px 68px 56px 56px"/>
+        <slice id="config" uvs="260px 68px 56px 56px"/>
+        <slice id="fuelIcon" uvs="4px 128px 28px 28px"/>
+        <slice id="wrenchIcon" uvs="36px 128px 28px 28px"/>
+        <slice id="wheelIcon" uvs="68px 128px 28px 28px"/>
+        <slice id="titleBar" uvs="0px 160px 512px 40px"/>
+        <slice id="bottomBar" uvs="0px 204px 512px 32px"/>
+        <slice id="prev" uvs="4px 240px 40px 40px"/>
+        <slice id="next" uvs="52px 240px 40px 40px"/>
     </slices>
 </texture>
