@@ -8,17 +8,61 @@
     </title>
     <description>
         <en><![CDATA[
-Description: A full worker/employee management system. Hire workers with unique skills (Efficiency, Driving, Skill on a 1-10 scale) that replace default AI helpers. Only as many AI helpers can be active as workers are hired. Workers are paid daily based on difficulty and quality. Monthly salary costs appear in the finance overview.
+Description: A full worker/employee management system that replaces the default AI helpers. Hire workers with unique skills (Efficiency, Driving, Skill on a 1-10 scale) that affect fuel consumption, work speed and vehicle wear. Only as many AI helpers can be active as workers are hired. Workers are paid monthly based on difficulty and quality. Monthly salary costs appear in the finance overview. Supports multiplayer — each farm manages its own workers.
 
 Hotkeys: Ctrl+H - Toggle HUD | Middle Mouse Button - Toggle cursor | InGame Menu - ESC → Advanced Helper tab
 
-GitHub link: https://github.com/meisterjk/FS25_AdvancedHelper]]></en>
+GitHub link: https://github.com/meisterjk/FS25_AdvancedHelper
+
+Changelog:
+v1.3.0.4:
+- Fixed steering mode and AI settings being blocked when all workers are busy
+- Workers are now properly released when an AI job ends or is cancelled
+
+v1.3.0.0:
+- Worker names now match the game language (German, English, US)
+- No more duplicate worker names
+- Fixed Giants AI dialog bypass
+- Debug logging disabled
+
+v1.2.0.0:
+- Improved fuel consumption, work speed and vehicle wear effects — now apply during all activities
+- Worker names now show readable names in notifications instead of internal IDs
+- Better integration with Courseplay and AutoDrive — fewer conflicts
+- Restructured project layout for better maintainability
+
+v1.1.0.0:
+- Better Courseplay and AutoDrive integration — works alongside CP and AD without conflicts
+- Fixed worker assignment issues when switching between AI, Courseplay and AutoDrive
+- Fixed handoff between Courseplay and AutoDrive — worker stays assigned during transitions]]></en>
         <de><![CDATA[
-Beschreibung: Ein vollständiges Personalmanagement-System. Stelle Arbeiter mit einzigartigen Fähigkeiten ein (Effizienz, Fahrweise, Können auf einer Skala von 1-10), die die Standard-KI-Helfer ersetzen. Es können nur so viele KI-Helfer aktiv sein wie Arbeiter eingestellt sind. Arbeiter werden täglich bezahlt, abhängig von Schwierigkeit und Qualität. Monatliche Gehaltskosten erscheinen in der Finanzübersicht.
+Beschreibung: Ein vollständiges Personalmanagement-System, das die Standard-KI-Helfer ersetzt. Stelle Arbeiter mit einzigartigen Fähigkeiten ein (Effizienz, Fahrweise, Können auf einer Skala von 1-10), die Spritverbrauch, Arbeitsgeschwindigkeit und Fahrzeugverschleiß beeinflussen. Es können nur so viele KI-Helfer aktiv sein wie Arbeiter eingestellt sind. Arbeiter werden monatlich bezahlt, abhängig von Schwierigkeit und Qualität. Monatliche Gehaltskosten erscheinen in der Finanzübersicht. Multiplayer-fähig — jede Farm verwaltet ihre eigenen Arbeiter.
 
 Tastenkombinationen: Strg+H - HUD ein/aus | Mittlere Maustaste - Cursor ein/aus | InGame-Menü - ESC → Erweiterte Helfer-Tab
 
-GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper]]></de>
+GitHub-Link: https://github.com/meisterjk/FS25_AdvancedHelper
+
+Changelog:
+v1.3.0.4:
+- Lenkmodus und KI-Einstellungen werden nicht mehr blockiert wenn alle Arbeiter beschäftigt sind
+- Arbeiter werden nun korrekt freigegeben wenn ein KI-Job beendet oder abgebrochen wird
+
+v1.3.0.0:
+- Arbeiternamen passen sich nun der Spielsprache an (Deutsch, Englisch, US)
+- Keine doppelten Arbeiternamen mehr
+- KI-Dialog-Umgehung behoben
+- Debug-Ausgabe deaktiviert
+
+v1.2.0.0:
+- Verbesserte Effekte für Spritverbrauch, Arbeitsgeschwindigkeit und Fahrzeugverschleiß — wirken jetzt bei allen Tätigkeiten
+- Arbeiternamen werden nun lesbar in Benachrichtigungen angezeigt statt als interne IDs
+- Bessere Integration mit Courseplay und AutoDrive — weniger Konflikte
+- Projektstruktur für bessere Wartbarkeit neu organisiert
+
+v1.1.0.0:
+- Bessere Courseplay- und AutoDrive-Integration — funktioniert neben CP und AD ohne Konflikte
+- Arbeiterzuweisungsprobleme beim Wechsel zwischen KI, Courseplay und AutoDrive behoben
+- Übergabe zwischen Courseplay und AutoDrive behoben — Arbeiter bleibt bei Übergängen zugewiesen]]></de>
     </description>
     <iconFilename>icon_advancedHelper.dds</iconFilename>
     <multiplayer supported="true"/>
